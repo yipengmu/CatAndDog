@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>猫狗大作战</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="top-bar" aria-label="游戏状态">
+        <section class="brand">
+          <div class="logo-badge" id="themeBadge" aria-hidden="true">CD</div>
+          <div>
+            <h1 id="gameTitle">猫狗大作战</h1>
+            <p id="gameSubtitle">双人同屏宠物冲冲冲</p>
+          </div>
+        </section>
+
+        <section class="score-board" aria-label="对战分数">
+          <div class="score-card side-left">
+            <span id="leftScoreLabel">猫猫队</span>
+            <strong id="leftScore">0</strong>
+          </div>
+          <div class="round-pill" id="roundState">准备</div>
+          <div class="score-card side-right">
+            <span id="rightScoreLabel">狗狗队</span>
+            <strong id="rightScore">0</strong>
+          </div>
+        </section>
+
+        <section class="top-actions">
+          <button class="primary-action" type="button" id="startButton">开始对战</button>
+          <button class="secondary-action" type="button" id="resetButton">重新开始</button>
+        </section>
+      </header>
+
+      <section class="mode-row" aria-label="主题和背景">
+        <div class="button-group" id="themeButtons"></div>
+        <div class="button-group">
+          <button class="environment-button active" type="button" data-env="garden">彩虹花园</button>
+          <button class="environment-button" type="button" data-env="beach">泡泡海滩</button>
+          <button class="environment-button" type="button" data-env="space">星星乐园</button>
+        </div>
+      </section>
+
+      <section class="battle-stage garden" id="battleStage" aria-label="对战场地">
+        <div class="sky-pop one"></div>
+        <div class="sky-pop two"></div>
+        <div class="sky-pop three"></div>
+        <div class="base base-left" id="leftBase">
+          <div class="base-face" id="leftBaseFace">ฅ</div>
+          <strong id="leftBaseName">猫猫城堡</strong>
+          <span id="leftBaseHp">14</span>
+        </div>
+        <div class="battle-lanes" id="battleLanes"></div>
+        <div class="base base-right" id="rightBase">
+          <div class="base-face" id="rightBaseFace">ᴥ</div>
+          <strong id="rightBaseName">狗狗城堡</strong>
+          <span id="rightBaseHp">14</span>
+        </div>
+      </section>
+
+      <section class="duel-controls" aria-label="双人出兵控制">
+        <article class="player-panel left-player" id="leftPanel">
+          <div class="player-head">
+            <div>
+              <span class="player-kicker">左方玩家</span>
+              <strong id="leftPanelName">猫猫队</strong>
+            </div>
+            <div class="energy-chip"><span id="leftEnergyText">6 / 10</span></div>
+          </div>
+          <div class="energy-track">
+            <div class="energy-fill left-fill" id="leftEnergyFill"></div>
+          </div>
+          <div class="lane-picker" id="leftLanePicker"></div>
+          <div class="strategy-grid" id="leftStrategyGrid"></div>
+        </article>
+
+        <article class="player-panel right-player" id="rightPanel">
+          <div class="player-head">
+            <div>
+              <span class="player-kicker">右方玩家</span>
+              <strong id="rightPanelName">狗狗队</strong>
+            </div>
+            <div class="energy-chip"><span id="rightEnergyText">6 / 10</span></div>
+          </div>
+          <div class="energy-track">
+            <div class="energy-fill right-fill" id="rightEnergyFill"></div>
+          </div>
+          <div class="lane-picker" id="rightLanePicker"></div>
+          <div class="strategy-grid" id="rightStrategyGrid"></div>
+        </article>
+      </section>
+    </main>
+
+    <script src="./game.js"></script>
+  </body>
+</html>
