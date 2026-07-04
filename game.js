@@ -48,8 +48,8 @@ const themes = {
       className: "dinoRight",
       units: [
         { name: "霸王龙", icon: "🦖", role: "强攻", species: "trex", cost: 2, hp: 6, atk: 2, speed: 1.08 },
-        { name: "南方巨兽龙", icon: "🦖", role: "猛冲", species: "giga", cost: 3, hp: 8, atk: 2, speed: 1.02 },
-        { name: "暴虐霸王龙", icon: "🦖", role: "王牌", species: "indominus", cost: 4, hp: 9, atk: 3, speed: 0.92 },
+        { name: "迅猛龙", icon: "🦖", role: "猛冲", species: "giga", cost: 3, hp: 8, atk: 2, speed: 1.02 },
+        { name: "食肉牛龙", icon: "🦖", role: "王牌", species: "indominus", cost: 4, hp: 9, atk: 3, speed: 0.92 },
       ],
     },
   },
@@ -304,8 +304,14 @@ function createUnit(side, unitConfig, lane) {
 }
 
 function renderAnimalIcon(unitConfig) {
+  const asset = getAnimalAsset(unitConfig);
+  const useImage = asset.imageUrl && asset.renderMode !== "fallback";
+  const image = useImage
+    ? `<img class="animal-image" src="${asset.imageUrl}" alt="${unitConfig.name}" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('.animal-icon').classList.add('use-fallback')" />`
+    : "";
   return `
-    <div class="animal-icon ${unitConfig.species || ""}" role="img" aria-label="${unitConfig.name}">
+    <div class="animal-icon ${asset.fallbackClass || unitConfig.species || ""} ${useImage ? "has-image" : "use-fallback"}" role="img" aria-label="${unitConfig.name}">
+      ${image}
       <i class="body"></i>
       <i class="head"></i>
       <i class="ear ear-left"></i>
@@ -319,6 +325,14 @@ function renderAnimalIcon(unitConfig) {
       <i class="detail detail-three"></i>
     </div>
   `;
+}
+
+function getAnimalAsset(unitConfig) {
+  const registry = window.animalAssets?.species || {};
+  return registry[unitConfig.species] || {
+    imageUrl: "",
+    fallbackClass: unitConfig.species || "",
+  };
 }
 
 function step(timestamp) {

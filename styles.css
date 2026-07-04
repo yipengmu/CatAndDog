@@ -503,6 +503,29 @@ h1 {
   border-radius: 32px 26px 28px 30px;
 }
 
+.animal-icon.persian .head {
+  width: 40px;
+  height: 36px;
+  border-radius: 48%;
+}
+
+.animal-icon.persian .eye-left,
+.animal-icon.persian .eye-right {
+  top: 18px;
+  width: 8px;
+  height: 9px;
+  border: 2px solid #263238;
+  background: radial-gradient(circle at 60% 35%, #ffffff 0 2px, #63b7ff 3px 5px, #1e5d9f 6px);
+}
+
+.animal-icon.persian .eye-left {
+  left: 13px;
+}
+
+.animal-icon.persian .eye-right {
+  left: 29px;
+}
+
 .animal-icon.persian .tail {
   width: 22px;
   height: 18px;
@@ -610,18 +633,38 @@ h1 {
 
 .animal-icon.golden .ear-left,
 .animal-icon.golden .ear-right {
-  top: 10px;
-  width: 13px;
-  height: 24px;
+  top: 8px;
+  width: 15px;
+  height: 29px;
   border-radius: 12px;
+  background: #c9862e;
 }
 
 .animal-icon.golden .ear-left {
-  left: 4px;
+  left: 2px;
 }
 
 .animal-icon.golden .ear-right {
-  left: 33px;
+  left: 34px;
+}
+
+.animal-icon.golden .tail {
+  right: -1px;
+  bottom: 20px;
+  width: 23px;
+  height: 13px;
+  border-radius: 16px;
+  background: #d89632;
+  transform: rotate(-24deg);
+}
+
+.animal-icon.golden .detail-one {
+  left: 25px;
+  bottom: 8px;
+  width: 28px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255, 239, 184, 0.72);
 }
 
 .animal-icon.teddy {
@@ -730,23 +773,32 @@ h1 {
 .animal-icon.stegosaurus .detail-one,
 .animal-icon.stegosaurus .detail-two,
 .animal-icon.stegosaurus .detail-three {
-  top: 4px;
-  width: 13px;
-  height: 18px;
+  top: 0;
+  width: 15px;
+  height: 24px;
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  background: #ffd45f;
+  background: linear-gradient(#ffe28c, #ffb94f);
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.16));
 }
 
 .animal-icon.stegosaurus .detail-one {
-  left: 24px;
+  left: 22px;
 }
 
 .animal-icon.stegosaurus .detail-two {
-  left: 38px;
+  left: 37px;
 }
 
 .animal-icon.stegosaurus .detail-three {
   left: 52px;
+}
+
+.animal-icon.stegosaurus .tail {
+  right: -3px;
+  bottom: 20px;
+  width: 24px;
+  height: 10px;
+  transform: rotate(-16deg);
 }
 
 .animal-icon.ankylosaurus {
@@ -761,9 +813,22 @@ h1 {
 }
 
 .animal-icon.ankylosaurus .tail {
-  right: -2px;
-  width: 25px;
-  height: 9px;
+  right: -5px;
+  width: 30px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.animal-icon.ankylosaurus .tail::after {
+  content: "";
+  position: absolute;
+  right: -5px;
+  top: -5px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #566f38;
+  box-shadow: inset -3px -3px 0 rgba(0, 0, 0, 0.18);
 }
 
 .animal-icon.ankylosaurus .detail-one,
@@ -814,6 +879,23 @@ h1 {
   border-radius: 18px 28px 16px 18px;
 }
 
+.animal-icon.giga .head {
+  width: 47px;
+  height: 32px;
+  border-radius: 14px 31px 14px 20px;
+}
+
+.animal-icon.indominus .head {
+  width: 48px;
+  height: 31px;
+  border-radius: 12px 30px 14px 20px;
+}
+
+.animal-icon.indominus .eye-left,
+.animal-icon.indominus .eye-right {
+  background: #e04444;
+}
+
 .animal-icon.trex .detail-one,
 .animal-icon.giga .detail-one,
 .animal-icon.indominus .detail-one {
@@ -837,6 +919,25 @@ h1 {
   box-shadow: 12px 0 0 #fff4db;
 }
 
+.animal-icon.giga .detail-three {
+  left: 28px;
+  top: 0;
+  width: 28px;
+  height: 13px;
+  clip-path: polygon(0 100%, 18% 0, 35% 100%, 52% 0, 70% 100%, 88% 0, 100% 100%);
+  background: #713a2d;
+}
+
+.animal-icon.indominus .detail-three {
+  left: 24px;
+  top: 3px;
+  width: 36px;
+  height: 12px;
+  clip-path: polygon(0 100%, 12% 0, 24% 100%, 36% 0, 48% 100%, 60% 0, 72% 100%, 84% 0, 100% 100%);
+  background: #ffffff;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.14));
+}
+
 .unit-health {
   position: absolute;
   z-index: 3;
@@ -854,16 +955,20 @@ h1 {
   width: 100%;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #49d46d, #b7ef5a);
+  background: var(--health-fill, linear-gradient(90deg, #49d46d, #b7ef5a));
   transition: width 0.18s ease;
 }
 
 .pet-unit.left {
   --tilt: -8deg;
+  --health-fill: linear-gradient(90deg, #ff6f86, #ffb157);
+  --low-health-fill: linear-gradient(90deg, #d63f59, #ffbd4a);
 }
 
 .pet-unit.right {
   --tilt: 8deg;
+  --health-fill: linear-gradient(90deg, #2d8bea, #53d5a6);
+  --low-health-fill: linear-gradient(90deg, #176fc3, #ffbd4a);
 }
 
 .pet-unit.cat {
@@ -1063,7 +1168,7 @@ h1 {
 }
 
 .pet-unit.low-health .unit-health-fill {
-  background: linear-gradient(90deg, #ff5f62, #ffbd4a);
+  background: var(--low-health-fill, linear-gradient(90deg, #ff5f62, #ffbd4a));
 }
 
 .pet-unit.faint {
@@ -1242,6 +1347,7 @@ h1 {
   font-size: 1.95rem;
   background: linear-gradient(145deg, #fff4c9, #ffb4c0);
   box-shadow: inset -6px -7px 0 rgba(0, 0, 0, 0.1);
+  overflow: visible;
 }
 
 .strategy-card.right .pet-avatar {
