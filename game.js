@@ -9,9 +9,9 @@ const themes = {
       face: "ฅ",
       className: "cat",
       units: [
-        { name: "闪电咪咪", icon: "🐱", cost: 2, hp: 4, atk: 1, speed: 1.55 },
-        { name: "布丁小猫", icon: "😺", cost: 3, hp: 7, atk: 2, speed: 1.05 },
-        { name: "飞跳猫", icon: "😸", cost: 4, hp: 5, atk: 3, speed: 1.35 },
+        { name: "波斯猫", icon: "🐱", role: "快攻", species: "persian", cost: 2, hp: 5, atk: 1, speed: 1.62 },
+        { name: "加菲猫", icon: "😺", role: "防御", species: "garfield", cost: 3, hp: 10, atk: 1, speed: 0.78 },
+        { name: "短耳猫", icon: "😸", role: "均衡", species: "shortEar", cost: 3, hp: 7, atk: 2, speed: 1.18 },
       ],
     },
     right: {
@@ -20,9 +20,9 @@ const themes = {
       face: "ᴥ",
       className: "dog",
       units: [
-        { name: "冲刺可可", icon: "🐶", cost: 2, hp: 5, atk: 1, speed: 1.35 },
-        { name: "泡泡小狗", icon: "🐕", cost: 3, hp: 8, atk: 2, speed: 0.95 },
-        { name: "勇气汪汪", icon: "🦮", cost: 4, hp: 6, atk: 3, speed: 1.1 },
+        { name: "斗牛犬", icon: "🐶", role: "强攻", species: "bulldog", cost: 4, hp: 7, atk: 3, speed: 0.95 },
+        { name: "金毛犬", icon: "🐕", role: "防御", species: "golden", cost: 3, hp: 10, atk: 1, speed: 0.86 },
+        { name: "泰迪", icon: "🐩", role: "均衡", species: "teddy", cost: 2, hp: 6, atk: 2, speed: 1.22 },
       ],
     },
   },
@@ -36,9 +36,9 @@ const themes = {
       face: "△",
       className: "dinoLeft",
       units: [
-        { name: "小角冲锋", icon: "🦕", cost: 2, hp: 5, atk: 1, speed: 1.25 },
-        { name: "圆盾三角龙", icon: "🦕", cost: 3, hp: 9, atk: 2, speed: 0.82 },
-        { name: "彩冠队长", icon: "🦖", cost: 4, hp: 6, atk: 3, speed: 1.08 },
+        { name: "三角龙", icon: "🦕", role: "冲锋", species: "triceratops", cost: 2, hp: 7, atk: 1, speed: 1.18 },
+        { name: "剑龙", icon: "🦕", role: "守线", species: "stegosaurus", cost: 3, hp: 9, atk: 2, speed: 0.88 },
+        { name: "甲龙", icon: "🦕", role: "重甲", species: "ankylosaurus", cost: 4, hp: 11, atk: 2, speed: 0.72 },
       ],
     },
     right: {
@@ -47,36 +47,9 @@ const themes = {
       face: "▴",
       className: "dinoRight",
       units: [
-        { name: "小霸王", icon: "🦖", cost: 2, hp: 4, atk: 2, speed: 1.15 },
-        { name: "重脚霸王", icon: "🦖", cost: 3, hp: 8, atk: 2, speed: 0.9 },
-        { name: "吼吼队长", icon: "🦖", cost: 4, hp: 7, atk: 3, speed: 1.0 },
-      ],
-    },
-  },
-  lizards: {
-    title: "蜥蜴大作战",
-    subtitle: "敏捷小队抢占三条甬道",
-    badge: "LZ",
-    left: {
-      name: "绿蜥队",
-      base: "树叶营地",
-      face: "◇",
-      className: "lizardLeft",
-      units: [
-        { name: "绿闪闪", icon: "🦎", cost: 2, hp: 4, atk: 1, speed: 1.65 },
-        { name: "圆眼蜥", icon: "🦎", cost: 3, hp: 7, atk: 2, speed: 1.08 },
-        { name: "长尾队长", icon: "🦎", cost: 4, hp: 5, atk: 3, speed: 1.45 },
-      ],
-    },
-    right: {
-      name: "蓝蜥队",
-      base: "水晶营地",
-      face: "◆",
-      className: "lizardRight",
-      units: [
-        { name: "蓝点点", icon: "🦎", cost: 2, hp: 5, atk: 1, speed: 1.45 },
-        { name: "厚背蜥", icon: "🦎", cost: 3, hp: 8, atk: 2, speed: 0.95 },
-        { name: "冰尾队长", icon: "🦎", cost: 4, hp: 6, atk: 3, speed: 1.18 },
+        { name: "霸王龙", icon: "🦖", role: "强攻", species: "trex", cost: 2, hp: 6, atk: 2, speed: 1.08 },
+        { name: "南方巨兽龙", icon: "🦖", role: "猛冲", species: "giga", cost: 3, hp: 8, atk: 2, speed: 1.02 },
+        { name: "暴虐霸王龙", icon: "🦖", role: "王牌", species: "indominus", cost: 4, hp: 9, atk: 3, speed: 0.92 },
       ],
     },
   },
@@ -84,12 +57,15 @@ const themes = {
 
 const state = {
   themeId: "catsDogs",
+  environment: "garden",
   running: false,
   maxEnergy: 10,
-  baseMaxHp: 14,
+  scoreTarget: 10,
+  baseMaxHp: 10,
+  winnerSide: null,
   sides: {
-    left: { energy: 6, baseHp: 14, score: 0, lane: 1, cardKey: "" },
-    right: { energy: 6, baseHp: 14, score: 0, lane: 1, cardKey: "" },
+    left: { energy: 6, baseHp: 10, score: 0, lane: 1, cardKey: "" },
+    right: { energy: 6, baseHp: 10, score: 0, lane: 1, cardKey: "" },
   },
   units: [],
   lastFrame: 0,
@@ -114,7 +90,7 @@ const controls = {
 const dom = {
   stage: document.querySelector("#battleStage"),
   lanes: document.querySelector("#battleLanes"),
-  themeButtons: document.querySelector("#themeButtons"),
+  quickSwitch: document.querySelector("#quickSwitch"),
   gameTitle: document.querySelector("#gameTitle"),
   gameSubtitle: document.querySelector("#gameSubtitle"),
   themeBadge: document.querySelector("#themeBadge"),
@@ -127,12 +103,16 @@ const dom = {
   rightScoreLabel: document.querySelector("#rightScoreLabel"),
   leftBaseHp: document.querySelector("#leftBaseHp"),
   rightBaseHp: document.querySelector("#rightBaseHp"),
+  leftBase: document.querySelector("#leftBase"),
+  rightBase: document.querySelector("#rightBase"),
   leftBaseFace: document.querySelector("#leftBaseFace"),
   rightBaseFace: document.querySelector("#rightBaseFace"),
   leftBaseName: document.querySelector("#leftBaseName"),
   rightBaseName: document.querySelector("#rightBaseName"),
   leftPanelName: document.querySelector("#leftPanelName"),
   rightPanelName: document.querySelector("#rightPanelName"),
+  leftPanel: document.querySelector("#leftPanel"),
+  rightPanel: document.querySelector("#rightPanel"),
   leftEnergyText: document.querySelector("#leftEnergyText"),
   rightEnergyText: document.querySelector("#rightEnergyText"),
   leftEnergyFill: document.querySelector("#leftEnergyFill"),
@@ -141,6 +121,12 @@ const dom = {
   rightLanePicker: document.querySelector("#rightLanePicker"),
   leftStrategyGrid: document.querySelector("#leftStrategyGrid"),
   rightStrategyGrid: document.querySelector("#rightStrategyGrid"),
+  rewardModal: document.querySelector("#rewardModal"),
+  rewardAvatar: document.querySelector("#rewardAvatar"),
+  rewardKicker: document.querySelector("#rewardKicker"),
+  rewardTitle: document.querySelector("#rewardTitle"),
+  rewardMessage: document.querySelector("#rewardMessage"),
+  rewardRestartButton: document.querySelector("#rewardRestartButton"),
 };
 
 function getTheme() {
@@ -166,16 +152,28 @@ function setupLanes() {
   });
 }
 
-function renderThemeButtons() {
-  dom.themeButtons.innerHTML = "";
-  Object.entries(themes).forEach(([themeId, theme]) => {
+function renderQuickSwitch() {
+  const options = [
+    { type: "theme", id: "catsDogs", label: "猫狗大战" },
+    { type: "theme", id: "dinos", label: "恐龙大作战" },
+    { type: "environment", id: "garden", label: "彩虹花园" },
+    { type: "environment", id: "beach", label: "泡泡海滩" },
+  ];
+
+  dom.quickSwitch.innerHTML = "";
+  options.forEach((option) => {
     const button = document.createElement("button");
-    button.className = `theme-button ${themeId === state.themeId ? "active" : ""}`;
+    const isActive =
+      (option.type === "theme" && option.id === state.themeId) ||
+      (option.type === "environment" && option.id === state.environment);
+    button.className = `quick-button ${isActive ? "active" : ""}`;
     button.type = "button";
-    button.dataset.theme = themeId;
-    button.textContent = theme.title;
-    button.addEventListener("click", () => switchTheme(themeId));
-    dom.themeButtons.appendChild(button);
+    button.textContent = option.label;
+    button.addEventListener("click", () => {
+      if (option.type === "theme") switchTheme(option.id);
+      if (option.type === "environment") switchEnvironment(option.id);
+    });
+    dom.quickSwitch.appendChild(button);
   });
 }
 
@@ -208,18 +206,17 @@ function renderStrategyCards(side) {
 
   themeSide.units.forEach((unit, index) => {
     const card = document.createElement("button");
-    card.className = `strategy-card ${side}`;
+    card.className = `strategy-card ${side} ${themeSide.className} ${unit.species || ""}`;
     card.type = "button";
     card.disabled = !state.running || sideState.energy < unit.cost;
     card.innerHTML = `
-      <div class="pet-avatar">${unit.icon}</div>
+      <div class="pet-avatar">${renderAnimalIcon(unit)}</div>
       <div>
         <span class="key-badge">${controls[side].units[index]}</span>
         <span class="pet-name">${unit.name}</span>
         <div class="pet-meta">
-          <span>${unit.cost} 星</span>
-          <span>${unit.atk} 攻</span>
-          <span>${unit.hp} 心</span>
+          <span class="cost-badge">★ ${unit.cost}</span>
+          <span>${unit.role}</span>
         </div>
       </div>
     `;
@@ -241,6 +238,10 @@ function updateHud() {
   dom.rightBaseName.textContent = theme.right.base;
   dom.leftBaseFace.textContent = theme.left.face;
   dom.rightBaseFace.textContent = theme.right.face;
+  dom.leftBase.className = `base base-left ${theme.left.className}`;
+  dom.rightBase.className = `base base-right ${theme.right.className}`;
+  dom.leftPanel.className = `player-panel left-player ${theme.left.className}`;
+  dom.rightPanel.className = `player-panel right-player ${theme.right.className}`;
 
   dom.leftScore.textContent = state.sides.left.score;
   dom.rightScore.textContent = state.sides.right.score;
@@ -251,13 +252,13 @@ function updateHud() {
   dom.leftEnergyFill.style.width = `${(state.sides.left.energy / state.maxEnergy) * 100}%`;
   dom.rightEnergyFill.style.width = `${(state.sides.right.energy / state.maxEnergy) * 100}%`;
 
-  if (state.sides.left.baseHp <= 0 || state.sides.right.baseHp <= 0) {
-    dom.roundState.textContent = state.sides.left.baseHp <= 0 ? `${theme.right.name}赢` : `${theme.left.name}赢`;
+  if (state.winnerSide) {
+    dom.roundState.textContent = `${theme[state.winnerSide].name}赢`;
   } else {
     dom.roundState.textContent = state.running ? "冲呀" : "准备";
   }
 
-  dom.startButton.textContent = state.running ? "对战中" : "开始对战";
+  dom.startButton.textContent = state.winnerSide ? "再来一局" : state.running ? "对战中" : "开始对战";
   sideOrder.forEach((side) => {
     renderLanePicker(side);
     renderStrategyCards(side);
@@ -282,6 +283,7 @@ function createUnit(side, unitConfig, lane) {
     side,
     lane,
     hp: unitConfig.hp,
+    maxHp: unitConfig.hp,
     atk: unitConfig.atk,
     speed: unitConfig.speed,
     x: side === "left" ? 8 : 92,
@@ -289,13 +291,34 @@ function createUnit(side, unitConfig, lane) {
     element: document.createElement("div"),
   };
 
-  unit.element.className = `pet-unit ${side} ${themeSide.className}`;
-  unit.element.innerHTML = `<span>${unitConfig.icon}</span>`;
+  unit.element.className = `pet-unit ${side} ${themeSide.className} ${unitConfig.species || ""}`;
+  unit.element.innerHTML = `
+    <div class="unit-health" aria-hidden="true"><div class="unit-health-fill"></div></div>
+    ${renderAnimalIcon(unitConfig)}
+  `;
   unit.element.style.top = `${lanePositions[lane]}%`;
   unit.element.style.left = `${unit.x}%`;
-  if (side === "right") unit.element.style.scale = "-1 1";
+  updateUnitHealth(unit);
   dom.lanes.appendChild(unit.element);
   state.units.push(unit);
+}
+
+function renderAnimalIcon(unitConfig) {
+  return `
+    <div class="animal-icon ${unitConfig.species || ""}" role="img" aria-label="${unitConfig.name}">
+      <i class="body"></i>
+      <i class="head"></i>
+      <i class="ear ear-left"></i>
+      <i class="ear ear-right"></i>
+      <i class="snout"></i>
+      <i class="eye eye-left"></i>
+      <i class="eye eye-right"></i>
+      <i class="tail"></i>
+      <i class="detail detail-one"></i>
+      <i class="detail detail-two"></i>
+      <i class="detail detail-three"></i>
+    </div>
+  `;
 }
 
 function step(timestamp) {
@@ -331,6 +354,7 @@ function updateUnits(delta) {
       if (unit.cooldown <= 0) {
         target.hp -= unit.atk;
         unit.cooldown = 25;
+        updateUnitHealth(target);
         target.element.classList.add("hit");
         setTimeout(() => target.element.classList.remove("hit"), 140);
         popDamage(target, unit.atk);
@@ -357,6 +381,13 @@ function updateUnits(delta) {
   updateHud();
 }
 
+function updateUnitHealth(unit) {
+  const ratio = Math.max(0, unit.hp / unit.maxHp);
+  const fill = unit.element.querySelector(".unit-health-fill");
+  if (fill) fill.style.width = `${ratio * 100}%`;
+  unit.element.classList.toggle("low-health", ratio <= 0.35);
+}
+
 function findTarget(unit) {
   return state.units.find((other) => {
     if (other.side === unit.side || other.lane !== unit.lane) return false;
@@ -367,8 +398,8 @@ function findTarget(unit) {
 function hitBase(side, amount) {
   const defender = state.sides[side];
   const attackerSide = side === "left" ? "right" : "left";
-  defender.baseHp = Math.max(0, defender.baseHp - amount);
-  state.sides[attackerSide].score += amount;
+  state.sides[attackerSide].score = Math.min(state.scoreTarget, state.sides[attackerSide].score + amount);
+  defender.baseHp = Math.max(0, state.scoreTarget - state.sides[attackerSide].score);
 }
 
 function removeUnit(unit) {
@@ -389,15 +420,37 @@ function popDamage(unit, amount) {
 }
 
 function checkWinner() {
-  if (state.sides.left.baseHp > 0 && state.sides.right.baseHp > 0) return;
+  if (state.winnerSide) return;
+  const winnerSide = sideOrder.find((side) => state.sides[side].score >= state.scoreTarget);
+  if (!winnerSide) return;
   state.running = false;
+  state.winnerSide = winnerSide;
+  [...state.units].forEach((unit) => removeUnit(unit));
   invalidatePanels();
   updateHud();
+  showReward(winnerSide);
+}
+
+function showReward(winnerSide) {
+  const theme = getTheme();
+  const winner = theme[winnerSide];
+  const hero = winner.units[Math.floor(Math.random() * winner.units.length)];
+  dom.rewardAvatar.className = `reward-avatar ${hero.species || ""}`;
+  dom.rewardAvatar.innerHTML = renderAnimalIcon(hero);
+  dom.rewardKicker.textContent = `${winner.name} 达到 ${state.scoreTarget} 分`;
+  dom.rewardTitle.textContent = "Congratulations!";
+  dom.rewardMessage.textContent = `${hero.name} 送来祝贺，${winner.name}赢得了比赛！`;
+  dom.rewardModal.classList.remove("hidden");
+}
+
+function hideReward() {
+  dom.rewardModal.classList.add("hidden");
 }
 
 function resetGame(keepTheme = true) {
   state.running = false;
   if (!keepTheme) state.themeId = "catsDogs";
+  state.winnerSide = null;
   sideOrder.forEach((side) => {
     state.sides[side].energy = 6;
     state.sides[side].baseHp = state.baseMaxHp;
@@ -409,8 +462,9 @@ function resetGame(keepTheme = true) {
   state.units = [];
   state.lastFrame = 0;
   state.lastEnergyTick = 0;
+  hideReward();
   setupLanes();
-  renderThemeButtons();
+  renderQuickSwitch();
   updateHud();
 }
 
@@ -420,19 +474,17 @@ function switchTheme(themeId) {
   resetGame(true);
 }
 
+function switchEnvironment(environment) {
+  state.environment = environment;
+  dom.stage.className = `battle-stage ${environment}`;
+  renderQuickSwitch();
+}
+
 function invalidatePanels() {
   sideOrder.forEach((side) => {
     state.sides[side].cardKey = "";
   });
 }
-
-document.querySelectorAll(".environment-button").forEach((button) => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".environment-button").forEach((item) => item.classList.remove("active"));
-    button.classList.add("active");
-    dom.stage.className = `battle-stage ${button.dataset.env}`;
-  });
-});
 
 document.addEventListener("keydown", (event) => {
   const key = event.key.toLowerCase();
@@ -456,15 +508,16 @@ document.addEventListener("keydown", (event) => {
 });
 
 dom.startButton.addEventListener("click", () => {
-  if (state.sides.left.baseHp <= 0 || state.sides.right.baseHp <= 0) resetGame(true);
+  if (state.winnerSide) resetGame(true);
   state.running = true;
   invalidatePanels();
   updateHud();
 });
 
 dom.resetButton.addEventListener("click", () => resetGame(true));
+dom.rewardRestartButton.addEventListener("click", () => resetGame(true));
 
 setupLanes();
-renderThemeButtons();
+renderQuickSwitch();
 updateHud();
 requestAnimationFrame(step);

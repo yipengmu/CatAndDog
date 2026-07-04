@@ -29,20 +29,13 @@
           </div>
         </section>
 
+        <section class="quick-switch" id="quickSwitch" aria-label="题材和背景切换"></section>
+
         <section class="top-actions">
           <button class="primary-action" type="button" id="startButton">开始对战</button>
           <button class="secondary-action" type="button" id="resetButton">重新开始</button>
         </section>
       </header>
-
-      <section class="mode-row" aria-label="主题和背景">
-        <div class="button-group" id="themeButtons"></div>
-        <div class="button-group">
-          <button class="environment-button active" type="button" data-env="garden">彩虹花园</button>
-          <button class="environment-button" type="button" data-env="beach">泡泡海滩</button>
-          <button class="environment-button" type="button" data-env="space">星星乐园</button>
-        </div>
-      </section>
 
       <section class="battle-stage garden" id="battleStage" aria-label="对战场地">
         <div class="sky-pop one"></div>
@@ -51,13 +44,13 @@
         <div class="base base-left" id="leftBase">
           <div class="base-face" id="leftBaseFace">ฅ</div>
           <strong id="leftBaseName">猫猫城堡</strong>
-          <span id="leftBaseHp">14</span>
+          <span id="leftBaseHp">10</span>
         </div>
         <div class="battle-lanes" id="battleLanes"></div>
         <div class="base base-right" id="rightBase">
           <div class="base-face" id="rightBaseFace">ᴥ</div>
           <strong id="rightBaseName">狗狗城堡</strong>
-          <span id="rightBaseHp">14</span>
+          <span id="rightBaseHp">10</span>
         </div>
       </section>
 
@@ -68,7 +61,7 @@
               <span class="player-kicker">左方玩家</span>
               <strong id="leftPanelName">猫猫队</strong>
             </div>
-            <div class="energy-chip"><span id="leftEnergyText">6 / 10</span></div>
+            <div class="energy-chip"><span class="star-symbol">★</span><span id="leftEnergyText">6 / 10</span></div>
           </div>
           <div class="energy-track">
             <div class="energy-fill left-fill" id="leftEnergyFill"></div>
@@ -83,7 +76,7 @@
               <span class="player-kicker">右方玩家</span>
               <strong id="rightPanelName">狗狗队</strong>
             </div>
-            <div class="energy-chip"><span id="rightEnergyText">6 / 10</span></div>
+            <div class="energy-chip"><span class="star-symbol">★</span><span id="rightEnergyText">6 / 10</span></div>
           </div>
           <div class="energy-track">
             <div class="energy-fill right-fill" id="rightEnergyFill"></div>
@@ -93,6 +86,17 @@
         </article>
       </section>
     </main>
+
+    <section class="reward-modal hidden" id="rewardModal" aria-live="polite" aria-label="获胜奖励">
+      <div class="reward-card">
+        <div class="reward-burst" aria-hidden="true">★</div>
+        <div class="reward-avatar" id="rewardAvatar">🐱</div>
+        <p class="reward-kicker" id="rewardKicker">获胜奖励</p>
+        <h2 id="rewardTitle">Congratulations!</h2>
+        <p id="rewardMessage">猫猫队赢得了比赛</p>
+        <button class="primary-action" type="button" id="rewardRestartButton">再来一局</button>
+      </div>
+    </section>
 
     <script src="./game.js"></script>
   </body>
