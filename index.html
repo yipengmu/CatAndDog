@@ -29,6 +29,8 @@
           </div>
         </section>
 
+        <section class="mode-switch" id="modeSwitch" aria-label="游戏模式切换"></section>
+
         <section class="quick-switch" id="quickSwitch" aria-label="题材和背景切换"></section>
 
         <section class="top-actions">
@@ -36,6 +38,11 @@
           <button class="secondary-action" type="button" id="resetButton">重新开始</button>
         </section>
       </header>
+
+      <section class="mobile-orientation-banner hidden" id="orientationBanner" aria-live="polite">
+        <strong id="orientationTitle">单人模式更适合竖屏</strong>
+        <span id="orientationText">双人对战请把手机横过来，两个小朋友一人一边更好操作。</span>
+      </section>
 
       <section class="battle-stage garden" id="battleStage" aria-label="对战场地">
         <div class="sky-pop one"></div>
@@ -68,6 +75,15 @@
           </div>
           <div class="lane-picker" id="leftLanePicker"></div>
           <div class="strategy-grid" id="leftStrategyGrid"></div>
+        </article>
+
+        <article class="solo-sidekick hidden" id="soloSidekick" aria-label="单人模式对手状态">
+          <div class="solo-sidekick-head">
+            <span class="player-kicker">对手状态</span>
+            <strong id="soloSidekickName">狗狗队 AI</strong>
+          </div>
+          <p class="solo-sidekick-text" id="soloSidekickText">AI 会自动选路并出兵，你只需要专注自己的操作。</p>
+          <div class="solo-sidekick-card" id="soloSidekickCard"></div>
         </article>
 
         <article class="player-panel right-player" id="rightPanel">

@@ -64,11 +64,14 @@ const themes = {
 const state = {
   themeId: "catsDogs",
   environment: "garden",
+  mode: "duo",
   running: false,
   maxEnergy: 10,
   scoreTarget: 10,
   baseMaxHp: 10,
   winnerSide: null,
+  isNarrowViewport: false,
+  orientation: "landscape",
   sides: {
     left: { energy: 6, baseHp: 10, score: 0, lane: 1, cardKey: "" },
     right: { energy: 6, baseHp: 10, score: 0, lane: 1, cardKey: "" },
@@ -77,6 +80,9 @@ const state = {
   lastFrame: 0,
   lastEnergyTick: 0,
   nextUnitId: 1,
+  ai: {
+    nextActionAt: 0,
+  },
 };
 
 const audioState = {
@@ -121,10 +127,15 @@ const controls = {
     units: ["J", "K", "L"],
   },
 };
+const modeOptions = [
+  { id: "solo", label: "单人闯关", subtitle: "竖屏更顺手" },
+  { id: "duo", label: "双人对战", subtitle: "横屏一起玩" },
+];
 
 const dom = {
   stage: document.querySelector("#battleStage"),
   lanes: document.querySelector("#battleLanes"),
+  modeSwitch: document.querySelector("#modeSwitch"),
   quickSwitch: document.querySelector("#quickSwitch"),
   gameTitle: document.querySelector("#gameTitle"),
   gameSubtitle: document.querySelector("#gameSubtitle"),
@@ -132,6 +143,9 @@ const dom = {
   roundState: document.querySelector("#roundState"),
   startButton: document.querySelector("#startButton"),
   resetButton: document.querySelector("#resetButton"),
+  orientationBanner: document.querySelector("#orientationBanner"),
+  orientationTitle: document.querySelector("#orientationTitle"),
+  orientationText: document.querySelector("#orientationText"),
   leftScore: document.querySelector("#leftScore"),
   rightScore: document.querySelector("#rightScore"),
   leftScoreLabel: document.querySelector("#leftScoreLabel"),
@@ -156,6 +170,10 @@ const dom = {
   rightLanePicker: document.querySelector("#rightLanePicker"),
   leftStrategyGrid: document.querySelector("#leftStrategyGrid"),
   rightStrategyGrid: document.querySelector("#rightStrategyGrid"),
+  soloSidekick: document.querySelector("#soloSidekick"),
+  soloSidekickName: document.querySelector("#soloSidekickName"),
+  soloSidekickText: document.querySelector("#soloSidekickText"),
+  soloSidekickCard: document.querySelector("#soloSidekickCard"),
   rewardModal: document.querySelector("#rewardModal"),
   rewardAvatar: document.querySelector("#rewardAvatar"),
   rewardKicker: document.querySelector("#rewardKicker"),
@@ -166,6 +184,14 @@ const dom = {
 
 function getTheme() {
   return themes[state.themeId];
+}
+
+function isSoloMode() {
+  return state.mode === "solo";
+}
+
+function getModeSubtitle() {
+  return isSoloMode() ? "单人竖屏闯关，右侧交给 AI" : "双人同屏宠物冲冲冲";
 }
 
 function stopThemeMusic() {
@@ -479,15 +505,35 @@ function renderQuickSwitch() {
   });
 }
 
+function renderModeSwitch() {
+  const renderKey = `${state.mode}:${state.isNarrowViewport}`;
+  if (dom.modeSwitch.dataset.renderKey === renderKey) return;
+  dom.modeSwitch.dataset.renderKey = renderKey;
+  dom.modeSwitch.innerHTML = "";
+  modeOptions.forEach((option) => {
+    const button = document.createElement("button");
+    button.className = `mode-button ${state.mode === option.id ? "active" : ""}`;
+    button.type = "button";
+    button.innerHTML = `<strong>${option.label}</strong><span>${option.subtitle}</span>`;
+    button.addEventListener("click", () => switchMode(option.id));
+    dom.modeSwitch.appendChild(button);
+  });
+}
+
 function renderLanePicker(side) {
   const picker = dom[`${side}LanePicker`];
+  const isAiSide = isSoloMode() && side === "right";
   picker.innerHTML = "";
+  picker.classList.toggle("ai-lane-picker", isAiSide);
   laneNames.forEach((name, laneIndex) => {
     const button = document.createElement("button");
     button.className = `lane-button ${state.sides[side].lane === laneIndex ? "active" : ""}`;
     button.type = "button";
-    button.innerHTML = `<span>${controls[side].lanes[laneIndex]}</span>${name}`;
+    button.disabled = isAiSide;
+    const keyHint = state.isNarrowViewport ? ["1", "2", "3"][laneIndex] : controls[side].lanes[laneIndex];
+    button.innerHTML = `<span>${keyHint}</span>${name}`;
     button.addEventListener("click", () => {
+      if (isAiSide) return;
       state.sides[side].lane = laneIndex;
       invalidatePanels();
       updateHud();
@@ -499,22 +545,26 @@ function renderLanePicker(side) {
 function renderStrategyCards(side) {
   const themeSide = getTheme()[side];
   const sideState = state.sides[side];
-  const cardKey = `${state.themeId}:${side}:${state.running}:${Math.floor(sideState.energy)}:${sideState.lane}`;
+  const isAiSide = isSoloMode() && side === "right";
+  const cardKey = `${state.themeId}:${state.mode}:${side}:${state.running}:${Math.floor(sideState.energy)}:${sideState.lane}:${state.isNarrowViewport}`;
   if (sideState.cardKey === cardKey) return;
   sideState.cardKey = cardKey;
 
   const grid = dom[`${side}StrategyGrid`];
   grid.innerHTML = "";
 
+  if (isAiSide) return;
+
   themeSide.units.forEach((unit, index) => {
     const card = document.createElement("button");
     card.className = `strategy-card ${side} ${themeSide.className} ${unit.species || ""}`;
     card.type = "button";
     card.disabled = !state.running || sideState.energy < unit.cost;
+    const keyHint = state.isNarrowViewport ? "点按出兵" : controls[side].units[index];
     card.innerHTML = `
       <div class="pet-avatar">${renderAnimalIcon(unit)}</div>
       <div>
-        <span class="key-badge">${controls[side].units[index]}</span>
+        <span class="key-badge">${keyHint}</span>
         <span class="pet-name">${unit.name}</span>
         <div class="pet-meta">
           <span class="cost-badge">★ ${unit.cost}</span>
@@ -529,13 +579,15 @@ function renderStrategyCards(side) {
 
 function updateHud() {
   const theme = getTheme();
+  const solo = isSoloMode();
+  const rightName = solo ? `${theme.right.name} AI` : theme.right.name;
   dom.gameTitle.textContent = theme.title;
-  dom.gameSubtitle.textContent = theme.subtitle;
+  dom.gameSubtitle.textContent = getModeSubtitle();
   dom.themeBadge.textContent = theme.badge;
   dom.leftScoreLabel.textContent = theme.left.name;
-  dom.rightScoreLabel.textContent = theme.right.name;
+  dom.rightScoreLabel.textContent = rightName;
   dom.leftPanelName.textContent = theme.left.name;
-  dom.rightPanelName.textContent = theme.right.name;
+  dom.rightPanelName.textContent = rightName;
   dom.leftBaseName.textContent = theme.left.base;
   dom.rightBaseName.textContent = theme.right.base;
   dom.leftBaseFace.textContent = theme.left.face;
@@ -543,7 +595,14 @@ function updateHud() {
   dom.leftBase.className = `base base-left ${theme.left.className}`;
   dom.rightBase.className = `base base-right ${theme.right.className}`;
   dom.leftPanel.className = `player-panel left-player ${theme.left.className}`;
-  dom.rightPanel.className = `player-panel right-player ${theme.right.className}`;
+  dom.rightPanel.className = `player-panel right-player ${theme.right.className} ${solo ? "ai-panel" : ""}`;
+  dom.rightPanel.classList.toggle("hidden", solo && state.isNarrowViewport);
+  dom.modeSwitch.setAttribute("aria-label", `当前模式：${solo ? "单人闯关" : "双人对战"}`);
+  dom.soloSidekick.classList.toggle("hidden", !solo);
+  dom.soloSidekickName.textContent = rightName;
+  dom.soloSidekickText.textContent = solo
+    ? `AI 会自动安排${theme.right.name}出兵，你只要点自己喜欢的小动物。`
+    : "";
 
   dom.leftScore.textContent = state.sides.left.score;
   dom.rightScore.textContent = state.sides.right.score;
@@ -553,6 +612,13 @@ function updateHud() {
   dom.rightEnergyText.textContent = `${Math.floor(state.sides.right.energy)} / ${state.maxEnergy}`;
   dom.leftEnergyFill.style.width = `${(state.sides.left.energy / state.maxEnergy) * 100}%`;
   dom.rightEnergyFill.style.width = `${(state.sides.right.energy / state.maxEnergy) * 100}%`;
+  dom.soloSidekickCard.innerHTML = `
+    <div class="solo-sidekick-avatar">${renderAnimalIcon(theme.right.units[state.sides.right.lane] || theme.right.units[0])}</div>
+    <div>
+      <strong>${rightName}</strong>
+      <p>${laneNames[state.sides.right.lane]} · 能量 ${Math.floor(state.sides.right.energy)} / ${state.maxEnergy}</p>
+    </div>
+  `;
 
   if (state.winnerSide) {
     dom.roundState.textContent = `${theme[state.winnerSide].name}赢`;
@@ -561,6 +627,13 @@ function updateHud() {
   }
 
   dom.startButton.textContent = state.winnerSide ? "再来一局" : state.running ? "对战中" : "开始对战";
+  renderModeSwitch();
+  dom.stage.dataset.mode = state.mode;
+  dom.stage.dataset.orientation = state.orientation;
+  document.body.dataset.mode = state.mode;
+  document.body.dataset.orientation = state.orientation;
+  document.body.dataset.mobile = String(state.isNarrowViewport);
+  syncOrientationBanner();
   sideOrder.forEach((side) => {
     renderLanePicker(side);
     renderStrategyCards(side);
@@ -645,11 +718,30 @@ function step(timestamp) {
 
   if (state.running) {
     updateEnergy(timestamp);
+    updateAi(timestamp);
     updateUnits(delta);
     checkWinner();
   }
 
   requestAnimationFrame(step);
+}
+
+function updateAi(timestamp) {
+  if (!isSoloMode() || !state.running || state.winnerSide) return;
+  if (timestamp < state.ai.nextActionAt) return;
+
+  const sideState = state.sides.right;
+  const units = getTheme().right.units;
+  const affordableUnits = units
+    .map((unit, index) => ({ unit, index }))
+    .filter(({ unit }) => sideState.energy >= unit.cost);
+
+  sideState.lane = Math.random() < 0.55 ? state.sides.left.lane : Math.floor(Math.random() * laneNames.length);
+  if (affordableUnits.length) {
+    const choice = affordableUnits[Math.floor(Math.random() * affordableUnits.length)];
+    deployUnit("right", choice.index);
+  }
+  state.ai.nextActionAt = timestamp + 650 + Math.random() * 850;
 }
 
 function updateEnergy(timestamp) {
@@ -773,6 +865,7 @@ function resetGame(keepTheme = true) {
   state.running = false;
   if (!keepTheme) state.themeId = "catsDogs";
   state.winnerSide = null;
+  state.ai.nextActionAt = 0;
   sideOrder.forEach((side) => {
     state.sides[side].energy = 6;
     state.sides[side].baseHp = state.baseMaxHp;
@@ -803,13 +896,36 @@ function switchEnvironment(environment) {
   renderQuickSwitch();
 }
 
+function switchMode(mode) {
+  if (mode === state.mode) return;
+  state.mode = mode;
+  resetGame(true);
+}
+
 function invalidatePanels() {
   sideOrder.forEach((side) => {
     state.sides[side].cardKey = "";
   });
 }
 
+function syncViewportState() {
+  state.isNarrowViewport = window.matchMedia("(max-width: 820px), (orientation: landscape) and (max-height: 520px)").matches;
+  state.orientation = window.innerHeight > window.innerWidth ? "portrait" : "landscape";
+  invalidatePanels();
+  updateHud();
+}
+
+function syncOrientationBanner() {
+  const showBanner = state.isNarrowViewport && ((isSoloMode() && state.orientation !== "portrait") || (!isSoloMode() && state.orientation !== "landscape"));
+  dom.orientationBanner.classList.toggle("hidden", !showBanner);
+  dom.orientationTitle.textContent = isSoloMode() ? "单人模式更适合竖屏" : "双人模式更适合横屏";
+  dom.orientationText.textContent = isSoloMode()
+    ? "把手机竖起来，自己的出兵卡会更大，点按更轻松。"
+    : "把手机横过来，左右两边各管一侧，小朋友同屏对战更顺手。";
+}
+
 document.addEventListener("keydown", (event) => {
+  if (isSoloMode() && ["u", "i", "o", "j", "k", "l"].includes(event.key.toLowerCase())) return;
   const key = event.key.toLowerCase();
   const leftLanes = { q: 0, w: 1, e: 2 };
   const leftUnits = { a: 0, s: 1, d: 2 };
@@ -844,7 +960,11 @@ dom.rewardRestartButton.addEventListener("click", () => {
   resetGame(true);
 });
 
+window.addEventListener("resize", syncViewportState);
+window.addEventListener("orientationchange", syncViewportState);
+
 setupLanes();
+renderModeSwitch();
 renderQuickSwitch();
-updateHud();
+syncViewportState();
 requestAnimationFrame(step);
