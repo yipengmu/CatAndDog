@@ -1,3 +1,9 @@
+const balancedUnitPresets = {
+  striker: { cost: 2, hp: 6, atk: 2, speed: 1.24 },
+  tank: { cost: 3, hp: 10, atk: 1, speed: 0.86 },
+  bruiser: { cost: 4, hp: 8, atk: 3, speed: 0.95 },
+};
+
 const themes = {
   catsDogs: {
     title: "猫狗大作战",
@@ -9,9 +15,9 @@ const themes = {
       face: "ฅ",
       className: "cat",
       units: [
-        { name: "波斯猫", icon: "🐱", role: "快攻", species: "persian", cost: 2, hp: 5, atk: 1, speed: 1.62 },
-        { name: "加菲猫", icon: "😺", role: "防御", species: "garfield", cost: 3, hp: 10, atk: 1, speed: 0.78 },
-        { name: "短耳猫", icon: "😸", role: "均衡", species: "shortEar", cost: 3, hp: 7, atk: 2, speed: 1.18 },
+        { name: "波斯猫", icon: "🐱", role: "快攻", species: "persian", ...balancedUnitPresets.striker },
+        { name: "加菲猫", icon: "😺", role: "防御", species: "garfield", ...balancedUnitPresets.tank },
+        { name: "短耳猫", icon: "😸", role: "强攻", species: "shortEar", ...balancedUnitPresets.bruiser },
       ],
     },
     right: {
@@ -20,9 +26,9 @@ const themes = {
       face: "ᴥ",
       className: "dog",
       units: [
-        { name: "斗牛犬", icon: "🐶", role: "强攻", species: "bulldog", cost: 4, hp: 7, atk: 3, speed: 0.95 },
-        { name: "金毛犬", icon: "🐕", role: "防御", species: "golden", cost: 3, hp: 10, atk: 1, speed: 0.86 },
-        { name: "泰迪", icon: "🐩", role: "均衡", species: "teddy", cost: 2, hp: 6, atk: 2, speed: 1.22 },
+        { name: "泰迪", icon: "🐩", role: "快攻", species: "teddy", ...balancedUnitPresets.striker },
+        { name: "金毛犬", icon: "🐕", role: "防御", species: "golden", ...balancedUnitPresets.tank },
+        { name: "斗牛犬", icon: "🐶", role: "强攻", species: "bulldog", ...balancedUnitPresets.bruiser },
       ],
     },
   },
@@ -36,9 +42,9 @@ const themes = {
       face: "△",
       className: "dinoLeft",
       units: [
-        { name: "三角龙", icon: "🦕", role: "冲锋", species: "triceratops", cost: 2, hp: 7, atk: 1, speed: 1.18 },
-        { name: "剑龙", icon: "🦕", role: "守线", species: "stegosaurus", cost: 3, hp: 9, atk: 2, speed: 0.88 },
-        { name: "甲龙", icon: "🦕", role: "重甲", species: "ankylosaurus", cost: 4, hp: 11, atk: 2, speed: 0.72 },
+        { name: "三角龙", icon: "🦕", role: "冲锋", species: "triceratops", ...balancedUnitPresets.striker },
+        { name: "剑龙", icon: "🦕", role: "守线", species: "stegosaurus", ...balancedUnitPresets.tank },
+        { name: "甲龙", icon: "🦕", role: "重击", species: "ankylosaurus", ...balancedUnitPresets.bruiser },
       ],
     },
     right: {
@@ -47,9 +53,9 @@ const themes = {
       face: "▴",
       className: "dinoRight",
       units: [
-        { name: "霸王龙", icon: "🦖", role: "强攻", species: "trex", cost: 2, hp: 6, atk: 2, speed: 1.08 },
-        { name: "迅猛龙", icon: "🦖", role: "猛冲", species: "giga", cost: 3, hp: 8, atk: 2, speed: 1.02 },
-        { name: "食肉牛龙", icon: "🦖", role: "王牌", species: "indominus", cost: 4, hp: 9, atk: 3, speed: 0.92 },
+        { name: "霸王龙", icon: "🦖", role: "猛冲", species: "trex", ...balancedUnitPresets.striker },
+        { name: "迅猛龙", icon: "🦖", role: "守线", species: "giga", ...balancedUnitPresets.tank },
+        { name: "食肉牛龙", icon: "🦖", role: "强攻", species: "indominus", ...balancedUnitPresets.bruiser },
       ],
     },
   },
@@ -71,6 +77,35 @@ const state = {
   lastFrame: 0,
   lastEnergyTick: 0,
   nextUnitId: 1,
+};
+
+const audioState = {
+  context: null,
+  masterGain: null,
+  musicGain: null,
+  started: false,
+  currentTheme: "",
+  bgm: null,
+  defeatClips: {},
+};
+
+const themeAudio = {
+  catsDogs: {
+    bgm: "./assets/audio/cats-dogs-bgm.mp3",
+  },
+  dinos: {
+    bgm: "./assets/audio/dinos-bgm.mp3",
+  },
+};
+
+const unitDefeatAudio = {
+  catsDogs: {
+    left: "./assets/audio/cat-defeat.mp3",
+    right: "./assets/audio/dog-defeat.mp3",
+  },
+  dinos: {
+    shared: "./assets/audio/shirou.m4a",
+  },
 };
 
 const lanePositions = [24, 50, 76];
@@ -131,6 +166,273 @@ const dom = {
 
 function getTheme() {
   return themes[state.themeId];
+}
+
+function stopThemeMusic() {
+  if (!audioState.bgm) return;
+  audioState.bgm.pause();
+  audioState.bgm.currentTime = 0;
+}
+
+function getDefeatAudioSrc(side) {
+  if (state.themeId === "dinos") return unitDefeatAudio.dinos.shared;
+  return unitDefeatAudio.catsDogs[side];
+}
+
+function getDefeatAudioKey(side) {
+  return state.themeId === "dinos" ? "dinos-shared" : `catsDogs-${side}`;
+}
+
+function getOrCreateDefeatClip(side) {
+  const clipKey = getDefeatAudioKey(side);
+  if (!audioState.defeatClips[clipKey]) {
+    const clip = new Audio(getDefeatAudioSrc(side));
+    clip.preload = "auto";
+    audioState.defeatClips[clipKey] = clip;
+  }
+  return audioState.defeatClips[clipKey];
+}
+
+function playDefeatClip(side) {
+  if (!audioState.started) return;
+  const volume = state.themeId === "catsDogs" ? 0.75 : 0.55;
+  if (state.themeId === "dinos") {
+    const clip = new Audio(unitDefeatAudio.dinos.shared);
+    clip.preload = "auto";
+    clip.volume = volume;
+    clip.play().catch(() => {});
+    return;
+  }
+  const source = getOrCreateDefeatClip(side);
+  try {
+    const clip = source.cloneNode();
+    clip.volume = volume;
+    clip.play().catch(() => {});
+  } catch {
+    source.currentTime = 0;
+    source.volume = volume;
+    source.play().catch(() => {});
+  }
+}
+
+function ensureAudio() {
+  if (audioState.context) return audioState.context;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return null;
+  const context = new AudioCtx();
+  const masterGain = context.createGain();
+  const musicGain = context.createGain();
+  masterGain.gain.value = 0.65;
+  musicGain.gain.value = 0.8;
+  musicGain.connect(masterGain);
+  masterGain.connect(context.destination);
+  audioState.context = context;
+  audioState.masterGain = masterGain;
+  audioState.musicGain = musicGain;
+  return context;
+}
+
+async function unlockAudio() {
+  const context = ensureAudio();
+  if (!context) return;
+  if (context.state === "suspended") await context.resume();
+  if (!audioState.started) {
+    audioState.started = true;
+    ["left", "right"].forEach((side) => getOrCreateDefeatClip(side).load());
+    const dinoDefeatClip = new Audio(unitDefeatAudio.dinos.shared);
+    dinoDefeatClip.preload = "auto";
+    dinoDefeatClip.load();
+    startThemeMusic();
+  }
+}
+
+function playTone({
+  frequency = 440,
+  type = "sine",
+  duration = 0.2,
+  volume = 0.08,
+  when,
+  slideTo = null,
+  gainNode = null,
+}) {
+  const context = ensureAudio();
+  if (!context) return;
+  const start = when ?? context.currentTime;
+  const osc = context.createOscillator();
+  const gain = context.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(frequency, start);
+  if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, start + duration);
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(volume, start + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+  osc.connect(gain);
+  gain.connect(gainNode || audioState.masterGain);
+  osc.start(start);
+  osc.stop(start + duration + 0.02);
+}
+
+function playNoiseBurst({ duration = 0.12, volume = 0.03, highpass = 900, when }) {
+  const context = ensureAudio();
+  if (!context) return;
+  const start = when ?? context.currentTime;
+  const buffer = context.createBuffer(1, Math.max(1, Math.floor(context.sampleRate * duration)), context.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < data.length; i += 1) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+  const source = context.createBufferSource();
+  const filter = context.createBiquadFilter();
+  const gain = context.createGain();
+  source.buffer = buffer;
+  filter.type = "highpass";
+  filter.frequency.value = highpass;
+  gain.gain.setValueAtTime(volume, start);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+  source.connect(filter);
+  filter.connect(gain);
+  gain.connect(audioState.masterGain);
+  source.start(start);
+}
+
+function playCatVictory() {
+  const now = ensureAudio()?.currentTime;
+  if (now == null) return;
+  playTone({ frequency: 680, type: "triangle", duration: 0.14, volume: 0.06, when: now, slideTo: 760 });
+  playTone({ frequency: 760, type: "triangle", duration: 0.18, volume: 0.05, when: now + 0.11, slideTo: 920 });
+}
+
+function playDogVictory() {
+  const now = ensureAudio()?.currentTime;
+  if (now == null) return;
+  playTone({ frequency: 240, type: "square", duration: 0.12, volume: 0.06, when: now, slideTo: 180 });
+  playNoiseBurst({ duration: 0.08, volume: 0.02, highpass: 700, when: now + 0.02 });
+  playTone({ frequency: 210, type: "square", duration: 0.15, volume: 0.05, when: now + 0.12, slideTo: 160 });
+}
+
+function playDinoRoar() {
+  const now = ensureAudio()?.currentTime;
+  if (now == null) return;
+  playTone({ frequency: 160, type: "sawtooth", duration: 0.26, volume: 0.08, when: now, slideTo: 110 });
+  playTone({ frequency: 120, type: "square", duration: 0.22, volume: 0.05, when: now + 0.05, slideTo: 90 });
+  playNoiseBurst({ duration: 0.15, volume: 0.018, highpass: 500, when: now + 0.03 });
+}
+
+function playDinoWail() {
+  const now = ensureAudio()?.currentTime;
+  if (now == null) return;
+  playTone({ frequency: 420, type: "triangle", duration: 0.24, volume: 0.055, when: now, slideTo: 180 });
+  playTone({ frequency: 310, type: "sine", duration: 0.26, volume: 0.04, when: now + 0.05, slideTo: 140 });
+}
+
+function playDeploySound(side, unitConfig) {
+  if (!audioState.started) return;
+  const now = ensureAudio()?.currentTime;
+  if (now == null) return;
+  const sideShift = side === "left" ? 1 : 0.84;
+  const costLift = unitConfig.cost * 18;
+  const baseFrequency = state.themeId === "dinos" ? 210 : 420;
+  playTone({
+    frequency: (baseFrequency + costLift) * sideShift,
+    type: state.themeId === "dinos" ? "sawtooth" : "triangle",
+    duration: 0.11,
+    volume: 0.11,
+    when: now,
+    slideTo: (baseFrequency + costLift + 90) * sideShift,
+  });
+  playTone({
+    frequency: (baseFrequency + costLift + 130) * sideShift,
+    type: "sine",
+    duration: 0.12,
+    volume: 0.065,
+    when: now + 0.07,
+    slideTo: (baseFrequency + costLift + 60) * sideShift,
+  });
+}
+
+function playAttackSound(unit) {
+  if (!audioState.started) return;
+  const now = ensureAudio()?.currentTime;
+  if (now == null) return;
+  const isDino = state.themeId === "dinos";
+  const sideShift = unit.side === "left" ? 1 : 0.78;
+  if (isDino) {
+    playTone({
+      frequency: 132 * sideShift,
+      type: "sawtooth",
+      duration: 0.1,
+      volume: 0.07,
+      when: now,
+      slideTo: 82 * sideShift,
+    });
+    playTone({
+      frequency: 96 * sideShift,
+      type: "square",
+      duration: 0.08,
+      volume: 0.05,
+      when: now + 0.02,
+      slideTo: 68 * sideShift,
+    });
+    playNoiseBurst({
+      duration: 0.08,
+      volume: 0.038,
+      highpass: 420,
+      when: now + 0.01,
+    });
+    return;
+  }
+  playTone({
+    frequency: 360 * sideShift,
+    type: "triangle",
+    duration: 0.07,
+    volume: 0.055,
+    when: now,
+    slideTo: 520 * sideShift,
+  });
+  playNoiseBurst({
+    duration: 0.055,
+    volume: 0.026,
+    highpass: 1100,
+    when: now + 0.01,
+  });
+}
+
+function playBaseHitSound(attackerSide) {
+  if (!audioState.started) return;
+  const now = ensureAudio()?.currentTime;
+  if (now == null) return;
+  const sideShift = attackerSide === "left" ? 1 : 0.82;
+  playTone({ frequency: 150 * sideShift, type: "square", duration: 0.16, volume: 0.095, when: now, slideTo: 92 * sideShift });
+  playNoiseBurst({ duration: 0.13, volume: 0.042, highpass: 420, when: now + 0.02 });
+}
+
+function playDefeatSounds(unit, actor) {
+  if (!audioState.started) return;
+  if (!actor?.side) return;
+  if (state.themeId === "catsDogs") {
+    playDefeatClip(actor.side);
+    if (actor.side === "left" && unit.side === "right") playCatVictory();
+    if (actor.side === "right" && unit.side === "left") playDogVictory();
+    return;
+  }
+  playDefeatClip(actor.side);
+}
+
+function startThemeMusic() {
+  if (!audioState.started) return;
+  const nextTheme = state.themeId;
+  const nextSrc = themeAudio[nextTheme]?.bgm;
+  if (!nextSrc) return;
+  if (audioState.bgm && audioState.currentTheme === nextTheme) {
+    audioState.bgm.play().catch(() => {});
+    return;
+  }
+  stopThemeMusic();
+  const bgm = new Audio(nextSrc);
+  bgm.loop = true;
+  bgm.preload = "auto";
+  bgm.volume = nextTheme === "catsDogs" ? 0.32 : 0.28;
+  audioState.bgm = bgm;
+  audioState.currentTheme = state.themeId;
+  bgm.play().catch(() => {});
 }
 
 function setupLanes() {
@@ -269,6 +571,7 @@ function deployUnit(side, unitIndex) {
   const sideState = state.sides[side];
   const unitConfig = getTheme()[side].units[unitIndex];
   if (!state.running || sideState.energy < unitConfig.cost) return;
+  void unlockAudio().then(() => playDeploySound(side, unitConfig));
 
   sideState.energy -= unitConfig.cost;
   createUnit(side, unitConfig, sideState.lane);
@@ -372,6 +675,10 @@ function updateUnits(delta) {
         target.element.classList.add("hit");
         setTimeout(() => target.element.classList.remove("hit"), 140);
         popDamage(target, unit.atk);
+        playAttackSound(unit);
+        if (target.hp <= 0) {
+          removeUnit(target, { cause: "defeated", actor: unit });
+        }
       }
     } else {
       const direction = unit.side === "left" ? 1 : -1;
@@ -388,8 +695,7 @@ function updateUnits(delta) {
       hitBase("left", unit.atk);
       removeUnit(unit);
     }
-
-    if (unit.hp <= 0) removeUnit(unit);
+    if (unit.hp <= 0) removeUnit(unit, { cause: "defeated", actor: target });
   });
 
   updateHud();
@@ -414,10 +720,12 @@ function hitBase(side, amount) {
   const attackerSide = side === "left" ? "right" : "left";
   state.sides[attackerSide].score = Math.min(state.scoreTarget, state.sides[attackerSide].score + amount);
   defender.baseHp = Math.max(0, state.scoreTarget - state.sides[attackerSide].score);
+  playBaseHitSound(attackerSide);
 }
 
-function removeUnit(unit) {
+function removeUnit(unit, meta = {}) {
   if (!state.units.includes(unit)) return;
+  if (meta.cause === "defeated") playDefeatSounds(unit, meta.actor);
   unit.element.classList.add("faint");
   setTimeout(() => unit.element.remove(), 260);
   state.units = state.units.filter((item) => item !== unit);
@@ -480,6 +788,7 @@ function resetGame(keepTheme = true) {
   setupLanes();
   renderQuickSwitch();
   updateHud();
+  if (audioState.started) startThemeMusic();
 }
 
 function switchTheme(themeId) {
@@ -522,6 +831,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 dom.startButton.addEventListener("click", () => {
+  unlockAudio();
   if (state.winnerSide) resetGame(true);
   state.running = true;
   invalidatePanels();
@@ -529,7 +839,10 @@ dom.startButton.addEventListener("click", () => {
 });
 
 dom.resetButton.addEventListener("click", () => resetGame(true));
-dom.rewardRestartButton.addEventListener("click", () => resetGame(true));
+dom.rewardRestartButton.addEventListener("click", () => {
+  unlockAudio();
+  resetGame(true);
+});
 
 setupLanes();
 renderQuickSwitch();
