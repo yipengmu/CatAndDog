@@ -72,6 +72,7 @@ const state = {
   winnerSide: null,
   isNarrowViewport: false,
   orientation: "landscape",
+  orientationOverride: "",
   sides: {
     left: { energy: 6, baseHp: 10, score: 0, lane: 1, cardKey: "" },
     right: { energy: 6, baseHp: 10, score: 0, lane: 1, cardKey: "" },
@@ -146,6 +147,7 @@ const dom = {
   orientationBanner: document.querySelector("#orientationBanner"),
   orientationTitle: document.querySelector("#orientationTitle"),
   orientationText: document.querySelector("#orientationText"),
+  orientationToggle: document.querySelector("#orientationToggle"),
   leftScore: document.querySelector("#leftScore"),
   rightScore: document.querySelector("#rightScore"),
   leftScoreLabel: document.querySelector("#leftScoreLabel"),
@@ -192,6 +194,10 @@ function isSoloMode() {
 
 function getModeSubtitle() {
   return isSoloMode() ? "单人竖屏闯关，右侧交给 AI" : "双人同屏宠物冲冲冲";
+}
+
+function getLayoutOrientation() {
+  return state.orientationOverride || state.orientation;
 }
 
 function stopThemeMusic() {
@@ -506,7 +512,7 @@ function renderQuickSwitch() {
 }
 
 function renderModeSwitch() {
-  const renderKey = `${state.mode}:${state.isNarrowViewport}`;
+  const renderKey = `${state.mode}:${state.isNarrowViewport}:${state.orientationOverride}`;
   if (dom.modeSwitch.dataset.renderKey === renderKey) return;
   dom.modeSwitch.dataset.renderKey = renderKey;
   dom.modeSwitch.innerHTML = "";
@@ -580,6 +586,7 @@ function renderStrategyCards(side) {
 function updateHud() {
   const theme = getTheme();
   const solo = isSoloMode();
+  const layoutOrientation = getLayoutOrientation();
   const rightName = solo ? `${theme.right.name} AI` : theme.right.name;
   dom.gameTitle.textContent = theme.title;
   dom.gameSubtitle.textContent = getModeSubtitle();
@@ -629,9 +636,11 @@ function updateHud() {
   dom.startButton.textContent = state.winnerSide ? "再来一局" : state.running ? "对战中" : "开始对战";
   renderModeSwitch();
   dom.stage.dataset.mode = state.mode;
-  dom.stage.dataset.orientation = state.orientation;
+  dom.stage.dataset.orientation = layoutOrientation;
   document.body.dataset.mode = state.mode;
-  document.body.dataset.orientation = state.orientation;
+  document.body.dataset.orientation = layoutOrientation;
+  document.body.dataset.deviceOrientation = state.orientation;
+  document.body.dataset.orientationOverride = state.orientationOverride || "auto";
   document.body.dataset.mobile = String(state.isNarrowViewport);
   syncOrientationBanner();
   sideOrder.forEach((side) => {
@@ -899,6 +908,7 @@ function switchEnvironment(environment) {
 function switchMode(mode) {
   if (mode === state.mode) return;
   state.mode = mode;
+  state.orientationOverride = "";
   resetGame(true);
 }
 
@@ -911,17 +921,37 @@ function invalidatePanels() {
 function syncViewportState() {
   state.isNarrowViewport = window.matchMedia("(max-width: 820px), (orientation: landscape) and (max-height: 520px)").matches;
   state.orientation = window.innerHeight > window.innerWidth ? "portrait" : "landscape";
+  if (!state.isNarrowViewport) state.orientationOverride = "";
   invalidatePanels();
   updateHud();
 }
 
 function syncOrientationBanner() {
-  const showBanner = state.isNarrowViewport && ((isSoloMode() && state.orientation !== "portrait") || (!isSoloMode() && state.orientation !== "landscape"));
+  const layoutOrientation = getLayoutOrientation();
+  const needsPortrait = isSoloMode();
+  const expectedOrientation = needsPortrait ? "portrait" : "landscape";
+  const showBanner = state.isNarrowViewport && (layoutOrientation !== expectedOrientation || state.orientationOverride === "landscape");
   dom.orientationBanner.classList.toggle("hidden", !showBanner);
-  dom.orientationTitle.textContent = isSoloMode() ? "单人模式更适合竖屏" : "双人模式更适合横屏";
-  dom.orientationText.textContent = isSoloMode()
-    ? "把手机竖起来，自己的出兵卡会更大，点按更轻松。"
-    : "把手机横过来，左右两边各管一侧，小朋友同屏对战更顺手。";
+  dom.orientationTitle.textContent = needsPortrait ? "单人模式更适合竖屏" : "双人模式更适合横屏";
+  dom.orientationText.textContent = needsPortrait
+    ? "把手机竖起来，自己的出兵卡会更大；也可以点按钮恢复竖屏布局。"
+    : state.orientationOverride === "landscape"
+      ? "现在已经是横屏布局了，不转手机也能双人对战。"
+      : "如果系统横屏没生效，可以直接点按钮切到横屏对战布局。";
+  const showToggle = state.isNarrowViewport && (!needsPortrait || state.orientationOverride === "landscape");
+  dom.orientationToggle.classList.toggle("hidden", !showToggle);
+  dom.orientationToggle.textContent = layoutOrientation === "landscape" ? "恢复自动方向" : "切换横屏布局";
+}
+
+function toggleOrientationOverride() {
+  const layoutOrientation = getLayoutOrientation();
+  if (layoutOrientation === "landscape") {
+    state.orientationOverride = "";
+  } else {
+    state.orientationOverride = "landscape";
+  }
+  invalidatePanels();
+  updateHud();
 }
 
 document.addEventListener("keydown", (event) => {
@@ -959,6 +989,7 @@ dom.rewardRestartButton.addEventListener("click", () => {
   unlockAudio();
   resetGame(true);
 });
+dom.orientationToggle.addEventListener("click", toggleOrientationOverride);
 
 window.addEventListener("resize", syncViewportState);
 window.addEventListener("orientationchange", syncViewportState);
