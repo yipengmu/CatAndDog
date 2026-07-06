@@ -922,7 +922,11 @@ function invalidatePanels() {
 function syncViewportState() {
   state.isNarrowViewport = window.matchMedia("(max-width: 820px), (orientation: landscape) and (max-height: 520px)").matches;
   state.orientation = window.innerHeight > window.innerWidth ? "portrait" : "landscape";
-  if (!state.isNarrowViewport) state.orientationOverride = "";
+  // In fullscreen duo mode on a portrait phone, force landscape layout
+  if (isFullscreen() && state.mode === "duo" && state.orientation === "portrait") {
+    state.orientationOverride = "landscape";
+  }
+  if (!state.isNarrowViewport && !isFullscreen()) state.orientationOverride = "";
   invalidatePanels();
   updateHud();
 }
@@ -980,6 +984,8 @@ function syncFullscreenButton() {
   const active = isFullscreen();
   dom.fullscreenButton.textContent = active ? "✕ 退出全屏" : "⛶ 全屏";
   dom.fullscreenButton.classList.toggle("is-fullscreen", active);
+  document.body.dataset.fullscreen = String(active);
+  syncViewportState();
 }
 
 function lockScreenOrientation() {
@@ -1049,9 +1055,19 @@ dom.rewardRestartButton.addEventListener("click", () => {
 });
 dom.orientationToggle.addEventListener("click", toggleOrientationOverride);
 dom.fullscreenButton.addEventListener("click", () => {
-  toggleFullscreen();
+  if (isFullscreen()) {
+    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  } else {
+    const el = document.documentElement;
+    const requestFS = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (requestFS) {
+      requestFS.call(el).then(() => {
+        lockScreenOrientation();
+        syncViewportState();
+      }).catch(() => {});
+    }
+  }
   unlockAudio();
-  if (!isFullscreen()) lockScreenOrientation();
 });
 
 document.addEventListener("fullscreenchange", syncFullscreenButton);
@@ -1067,4 +1083,5 @@ renderModeSwitch();
 renderQuickSwitch();
 syncViewportState();
 syncFullscreenButton();
+document.body.dataset.fullscreen = "false";
 requestAnimationFrame(step);

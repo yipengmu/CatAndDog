@@ -2085,99 +2085,293 @@ h1 {
   gap: 8px;
 }
 
-/* Mobile fullscreen - extra compact */
-@media (max-width: 620px) {
-  :fullscreen .game-shell,
-  :-webkit-full-screen .game-shell {
-    padding: 4px;
-    gap: 6px;
-  }
-
-  :fullscreen .top-bar,
-  :-webkit-full-screen .top-bar {
-    padding: 8px 10px;
-    gap: 6px;
-    border-radius: 14px;
-  }
-
-  :fullscreen .brand p,
-  :-webkit-full-screen .brand p {
-    display: none;
-  }
-
-  :fullscreen .battle-stage,
-  :-webkit-full-screen .battle-stage {
-    border-radius: 14px;
-    border-width: 3px;
-  }
-
-  :fullscreen .player-panel,
-  :-webkit-full-screen .player-panel {
-    padding: 8px;
-    gap: 8px;
-    border-radius: 14px;
-  }
-
-  :fullscreen .strategy-card,
-  :-webkit-full-screen .strategy-card {
-    min-height: 70px;
-    padding: 8px;
-    border-radius: 14px;
-  }
-
-  :fullscreen .logo-badge,
-  :-webkit-full-screen .logo-badge {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-  }
+/* Mobile fullscreen portrait - compact version */
+body[data-fullscreen="true"][data-orientation="portrait"] .game-shell {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  padding: 6px;
+  gap: 6px;
+  grid-template-rows: auto 1fr auto;
 }
 
-/* Landscape fullscreen on mobile */
-@media (orientation: landscape) and (max-height: 520px) {
-  :fullscreen .game-shell,
-  :-webkit-full-screen .game-shell {
-    grid-template-rows: auto 1fr auto;
-    padding: 4px 8px;
-    gap: 5px;
-  }
+body[data-fullscreen="true"][data-orientation="portrait"] .top-bar {
+  padding: 8px 10px;
+  gap: 6px;
+  border-radius: 14px;
+}
 
-  :fullscreen .top-bar,
-  :-webkit-full-screen .top-bar {
-    padding: 6px 10px;
-  }
+body[data-fullscreen="true"][data-orientation="portrait"] .brand p {
+  display: none;
+}
 
-  :fullscreen .battle-stage,
-  :-webkit-full-screen .battle-stage {
-    min-height: 0;
-  }
+body[data-fullscreen="true"][data-orientation="portrait"] .logo-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
 
-  :fullscreen .duel-controls,
-  :-webkit-full-screen .duel-controls {
-    gap: 6px;
-  }
+body[data-fullscreen="true"][data-orientation="portrait"] .battle-stage {
+  min-height: 0;
+  border-radius: 14px;
+  border-width: 3px;
+}
 
-  :fullscreen .player-panel,
-  :-webkit-full-screen .player-panel {
-    padding: 8px;
-    gap: 6px;
-  }
+body[data-fullscreen="true"][data-orientation="portrait"] .player-panel {
+  padding: 8px;
+  gap: 8px;
+  border-radius: 14px;
+}
 
-  :fullscreen .strategy-grid,
-  :-webkit-full-screen .strategy-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-  }
+body[data-fullscreen="true"][data-orientation="portrait"] .strategy-card {
+  min-height: 70px;
+  padding: 8px;
+  border-radius: 14px;
+}
 
-  :fullscreen .strategy-card,
-  :-webkit-full-screen .strategy-card {
-    min-height: 64px;
-    padding: 6px;
-  }
+/* Mobile fullscreen landscape - full horizontal layout */
+body[data-fullscreen="true"][data-orientation="landscape"] .game-shell {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  padding: 4px 6px;
+  gap: 4px;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+}
 
-  :fullscreen .lane-button,
-  :-webkit-full-screen .lane-button {
-    min-height: 36px;
-  }
+body[data-fullscreen="true"][data-orientation="landscape"] .top-bar {
+  padding: 6px 10px;
+  gap: 8px;
+  border-radius: 12px;
+  grid-template-columns: auto 1fr auto auto auto;
+  align-items: center;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .brand {
+  gap: 8px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .brand p,
+body[data-fullscreen="true"][data-orientation="landscape"] .brand h1 {
+  font-size: 1rem;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .brand p {
+  display: none;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .logo-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .score-board {
+  grid-template-columns: 90px 70px 90px;
+  gap: 6px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .score-card {
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .score-card strong {
+  font-size: 1.2rem;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .round-pill {
+  min-height: 36px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .mode-switch {
+  grid-template-columns: repeat(2, minmax(90px, 1fr));
+  gap: 6px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .mode-button {
+  min-height: 36px;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .mode-button strong {
+  font-size: 0.82rem;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .mode-button span {
+  display: none;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .quick-switch {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .quick-button {
+  min-height: 36px;
+  padding: 0 8px;
+  font-size: 0.78rem;
+  border-radius: 10px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .top-actions {
+  grid-template-columns: auto auto auto;
+  gap: 6px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .primary-action,
+body[data-fullscreen="true"][data-orientation="landscape"] .secondary-action,
+body[data-fullscreen="true"][data-orientation="landscape"] .fullscreen-action {
+  min-width: auto;
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 0.82rem;
+  border-radius: 10px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .battle-stage {
+  min-height: 0;
+  border-radius: 12px;
+  border-width: 3px;
+  grid-template-columns: 60px 1fr 60px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .base {
+  width: 54px;
+  min-height: 80px;
+  padding: 6px 4px;
+  margin-bottom: 10px;
+  border-radius: 16px 16px 10px 10px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .base-face {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  font-size: 1.3rem;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .base strong {
+  display: none;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .duel-controls {
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .player-panel {
+  padding: 6px 8px;
+  gap: 5px;
+  border-radius: 12px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .player-head strong {
+  font-size: 0.92rem;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .player-kicker {
+  font-size: 0.7rem;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .energy-chip {
+  min-width: 70px;
+  min-height: 30px;
+  padding: 0 8px;
+  font-size: 0.78rem;
+  border-radius: 10px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .energy-track {
+  height: 10px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .lane-picker {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .lane-button {
+  min-height: 32px;
+  padding: 0 6px;
+  font-size: 0.78rem;
+  border-radius: 10px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .lane-button span {
+  min-width: 20px;
+  height: 20px;
+  margin-right: 4px;
+  font-size: 0.68rem;
+  border-radius: 6px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .strategy-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .strategy-card {
+  min-height: 56px;
+  padding: 5px 6px;
+  gap: 6px;
+  border-radius: 10px;
+  grid-template-columns: 38px 1fr;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .pet-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .pet-avatar .animal-icon {
+  width: 34px;
+  height: 30px;
+  transform: scale(0.78);
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .pet-name {
+  font-size: 0.82rem;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .key-badge {
+  display: none;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .pet-meta {
+  margin-top: 2px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .pet-meta span {
+  font-size: 0.66rem;
+  padding: 1px 5px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .mobile-orientation-banner {
+  display: none !important;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .solo-sidekick {
+  padding: 8px;
+  border-radius: 12px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .pet-unit {
+  width: 56px;
+  height: 56px;
+  margin-left: -28px;
+  margin-top: -28px;
+}
+
+body[data-fullscreen="true"][data-orientation="landscape"] .pet-unit .animal-icon {
+  width: 64px;
+  height: 52px;
+  transform: translateY(2px) scale(0.92);
 }
