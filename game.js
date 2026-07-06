@@ -144,6 +144,7 @@ const dom = {
   roundState: document.querySelector("#roundState"),
   startButton: document.querySelector("#startButton"),
   resetButton: document.querySelector("#resetButton"),
+  fullscreenButton: document.querySelector("#fullscreenButton"),
   orientationBanner: document.querySelector("#orientationBanner"),
   orientationTitle: document.querySelector("#orientationTitle"),
   orientationText: document.querySelector("#orientationText"),
@@ -954,6 +955,63 @@ function toggleOrientationOverride() {
   updateHud();
 }
 
+function isFullscreen() {
+  return !!(document.fullscreenElement || document.webkitFullscreenElement);
+}
+
+function toggleFullscreen() {
+  if (isFullscreen()) {
+    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  } else {
+    const el = document.documentElement;
+    const requestFS = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (requestFS) {
+      requestFS.call(el).catch(() => {});
+    }
+  }
+}
+
+function syncFullscreenButton() {
+  const fsApi = document.fullscreenEnabled || document.webkitFullscreenEnabled;
+  if (!fsApi) {
+    dom.fullscreenButton.classList.add("hidden");
+    return;
+  }
+  const active = isFullscreen();
+  dom.fullscreenButton.textContent = active ? "✕ 退出全屏" : "⛶ 全屏";
+  dom.fullscreenButton.classList.toggle("is-fullscreen", active);
+}
+
+function lockScreenOrientation() {
+  if (!screen.orientation || !screen.orientation.lock) return;
+  const preferred = isSoloMode() ? "portrait" : "landscape";
+  screen.orientation.lock(preferred).catch(() => {});
+}
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener("touchend", (e) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      e.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function preventPullToRefresh() {
+  let startY = 0;
+  document.addEventListener("touchstart", (e) => {
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener("touchmove", (e) => {
+    const y = e.touches[0].clientY;
+    if (y > startY && window.scrollY === 0) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+}
+
 document.addEventListener("keydown", (event) => {
   if (isSoloMode() && ["u", "i", "o", "j", "k", "l"].includes(event.key.toLowerCase())) return;
   const key = event.key.toLowerCase();
@@ -990,12 +1048,23 @@ dom.rewardRestartButton.addEventListener("click", () => {
   resetGame(true);
 });
 dom.orientationToggle.addEventListener("click", toggleOrientationOverride);
+dom.fullscreenButton.addEventListener("click", () => {
+  toggleFullscreen();
+  unlockAudio();
+  if (!isFullscreen()) lockScreenOrientation();
+});
+
+document.addEventListener("fullscreenchange", syncFullscreenButton);
+document.addEventListener("webkitfullscreenchange", syncFullscreenButton);
 
 window.addEventListener("resize", syncViewportState);
 window.addEventListener("orientationchange", syncViewportState);
 
+preventDoubleTapZoom();
+preventPullToRefresh();
 setupLanes();
 renderModeSwitch();
 renderQuickSwitch();
 syncViewportState();
+syncFullscreenButton();
 requestAnimationFrame(step);

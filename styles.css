@@ -19,13 +19,18 @@
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   color: var(--ink);
   background:
     radial-gradient(circle at 16% 12%, rgba(255, 216, 93, 0.46), transparent 24%),
     radial-gradient(circle at 88% 18%, rgba(84, 183, 255, 0.34), transparent 22%),
     linear-gradient(135deg, #fff7cf 0%, #c9f5ef 48%, #ffd6df 100%);
   overflow-x: hidden;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
 }
 
 button {
@@ -42,6 +47,7 @@ button {
 .game-shell {
   width: min(1220px, calc(100vw - 28px));
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0 auto;
   padding: 18px 0 20px;
   display: grid;
@@ -155,6 +161,27 @@ h1 {
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px;
+}
+
+.fullscreen-action {
+  min-height: 44px;
+  border-radius: 15px;
+  padding: 0 16px;
+  font-weight: 900;
+  font-size: 0.88rem;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.fullscreen-action:active {
+  transform: translateY(3px) scale(0.98);
+}
+
+.fullscreen-action.is-fullscreen {
+  color: white;
+  background: linear-gradient(145deg, #ff9f63, #ff6f96);
 }
 
 .mode-switch {
@@ -1746,7 +1773,7 @@ h1 {
   }
 
   .top-actions {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr auto;
   }
 
   .mode-switch {
@@ -2017,3 +2044,140 @@ h1 {
   body[data-mobile="true"] .orientation-toggle {
     width: 100%;
   }
+
+/* Fullscreen mode optimizations */
+:fullscreen body,
+:-webkit-full-screen body {
+  padding: 0;
+}
+
+:fullscreen .game-shell,
+:-webkit-full-screen .game-shell {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  padding: 8px;
+  gap: 8px;
+  grid-template-rows: auto 1fr auto;
+}
+
+:fullscreen .top-bar,
+:-webkit-full-screen .top-bar {
+  padding: 10px 12px;
+  gap: 8px;
+  border-radius: 16px;
+}
+
+:fullscreen .battle-stage,
+:-webkit-full-screen .battle-stage {
+  min-height: 0;
+  border-radius: 18px;
+}
+
+:fullscreen .player-panel,
+:-webkit-full-screen .player-panel {
+  padding: 10px;
+  border-radius: 16px;
+}
+
+:fullscreen .duel-controls,
+:-webkit-full-screen .duel-controls {
+  gap: 8px;
+}
+
+/* Mobile fullscreen - extra compact */
+@media (max-width: 620px) {
+  :fullscreen .game-shell,
+  :-webkit-full-screen .game-shell {
+    padding: 4px;
+    gap: 6px;
+  }
+
+  :fullscreen .top-bar,
+  :-webkit-full-screen .top-bar {
+    padding: 8px 10px;
+    gap: 6px;
+    border-radius: 14px;
+  }
+
+  :fullscreen .brand p,
+  :-webkit-full-screen .brand p {
+    display: none;
+  }
+
+  :fullscreen .battle-stage,
+  :-webkit-full-screen .battle-stage {
+    border-radius: 14px;
+    border-width: 3px;
+  }
+
+  :fullscreen .player-panel,
+  :-webkit-full-screen .player-panel {
+    padding: 8px;
+    gap: 8px;
+    border-radius: 14px;
+  }
+
+  :fullscreen .strategy-card,
+  :-webkit-full-screen .strategy-card {
+    min-height: 70px;
+    padding: 8px;
+    border-radius: 14px;
+  }
+
+  :fullscreen .logo-badge,
+  :-webkit-full-screen .logo-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Landscape fullscreen on mobile */
+@media (orientation: landscape) and (max-height: 520px) {
+  :fullscreen .game-shell,
+  :-webkit-full-screen .game-shell {
+    grid-template-rows: auto 1fr auto;
+    padding: 4px 8px;
+    gap: 5px;
+  }
+
+  :fullscreen .top-bar,
+  :-webkit-full-screen .top-bar {
+    padding: 6px 10px;
+  }
+
+  :fullscreen .battle-stage,
+  :-webkit-full-screen .battle-stage {
+    min-height: 0;
+  }
+
+  :fullscreen .duel-controls,
+  :-webkit-full-screen .duel-controls {
+    gap: 6px;
+  }
+
+  :fullscreen .player-panel,
+  :-webkit-full-screen .player-panel {
+    padding: 8px;
+    gap: 6px;
+  }
+
+  :fullscreen .strategy-grid,
+  :-webkit-full-screen .strategy-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  :fullscreen .strategy-card,
+  :-webkit-full-screen .strategy-card {
+    min-height: 64px;
+    padding: 6px;
+  }
+
+  :fullscreen .lane-button,
+  :-webkit-full-screen .lane-button {
+    min-height: 36px;
+  }
+}
