@@ -73,6 +73,7 @@ const state = {
   isNarrowViewport: false,
   orientation: "landscape",
   orientationOverride: "",
+  settingsOpen: false,
   sides: {
     left: { energy: 6, baseHp: 10, score: 0, lane: 1, cardKey: "" },
     right: { energy: 6, baseHp: 10, score: 0, lane: 1, cardKey: "" },
@@ -144,6 +145,7 @@ const dom = {
   roundState: document.querySelector("#roundState"),
   startButton: document.querySelector("#startButton"),
   resetButton: document.querySelector("#resetButton"),
+  mobileSettingsButton: document.querySelector("#mobileSettingsButton"),
   orientationBanner: document.querySelector("#orientationBanner"),
   orientationTitle: document.querySelector("#orientationTitle"),
   orientationText: document.querySelector("#orientationText"),
@@ -506,6 +508,7 @@ function renderQuickSwitch() {
     button.addEventListener("click", () => {
       if (option.type === "theme") switchTheme(option.id);
       if (option.type === "environment") switchEnvironment(option.id);
+      closeMobileSettings();
     });
     dom.quickSwitch.appendChild(button);
   });
@@ -521,7 +524,10 @@ function renderModeSwitch() {
     button.className = `mode-button ${state.mode === option.id ? "active" : ""}`;
     button.type = "button";
     button.innerHTML = `<strong>${option.label}</strong><span>${option.subtitle}</span>`;
-    button.addEventListener("click", () => switchMode(option.id));
+    button.addEventListener("click", () => {
+      switchMode(option.id);
+      closeMobileSettings();
+    });
     dom.modeSwitch.appendChild(button);
   });
 }
@@ -566,7 +572,7 @@ function renderStrategyCards(side) {
     card.className = `strategy-card ${side} ${themeSide.className} ${unit.species || ""}`;
     card.type = "button";
     card.disabled = !state.running || sideState.energy < unit.cost;
-    const keyHint = state.isNarrowViewport ? "点按出兵" : controls[side].units[index];
+    const keyHint = state.isNarrowViewport ? (getLayoutOrientation() === "landscape" ? "出兵" : "点按出兵") : controls[side].units[index];
     card.innerHTML = `
       <div class="pet-avatar">${renderAnimalIcon(unit)}</div>
       <div>
@@ -642,6 +648,10 @@ function updateHud() {
   document.body.dataset.deviceOrientation = state.orientation;
   document.body.dataset.orientationOverride = state.orientationOverride || "auto";
   document.body.dataset.mobile = String(state.isNarrowViewport);
+  document.body.dataset.settingsOpen = String(state.settingsOpen);
+  dom.mobileSettingsButton.classList.toggle("hidden", !state.isNarrowViewport);
+  dom.mobileSettingsButton.setAttribute("aria-expanded", String(state.settingsOpen));
+  dom.mobileSettingsButton.textContent = state.settingsOpen ? "收起" : "设置";
   syncOrientationBanner();
   sideOrder.forEach((side) => {
     renderLanePicker(side);
@@ -912,6 +922,12 @@ function switchMode(mode) {
   resetGame(true);
 }
 
+function closeMobileSettings() {
+  if (!state.settingsOpen) return;
+  state.settingsOpen = false;
+  updateHud();
+}
+
 function invalidatePanels() {
   sideOrder.forEach((side) => {
     state.sides[side].cardKey = "";
@@ -921,7 +937,10 @@ function invalidatePanels() {
 function syncViewportState() {
   state.isNarrowViewport = window.matchMedia("(max-width: 820px), (orientation: landscape) and (max-height: 520px)").matches;
   state.orientation = window.innerHeight > window.innerWidth ? "portrait" : "landscape";
-  if (!state.isNarrowViewport) state.orientationOverride = "";
+  if (!state.isNarrowViewport) {
+    state.orientationOverride = "";
+    state.settingsOpen = false;
+  }
   invalidatePanels();
   updateHud();
 }
@@ -951,6 +970,11 @@ function toggleOrientationOverride() {
     state.orientationOverride = "landscape";
   }
   invalidatePanels();
+  updateHud();
+}
+
+function toggleMobileSettings() {
+  state.settingsOpen = !state.settingsOpen;
   updateHud();
 }
 
@@ -990,6 +1014,7 @@ dom.rewardRestartButton.addEventListener("click", () => {
   resetGame(true);
 });
 dom.orientationToggle.addEventListener("click", toggleOrientationOverride);
+dom.mobileSettingsButton.addEventListener("click", toggleMobileSettings);
 
 window.addEventListener("resize", syncViewportState);
 window.addEventListener("orientationchange", syncViewportState);

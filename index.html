@@ -29,14 +29,19 @@
           </div>
         </section>
 
-        <section class="mode-switch" id="modeSwitch" aria-label="游戏模式切换"></section>
+        <section class="settings-panel" id="settingsPanel" aria-label="更多设置">
+          <section class="mode-switch" id="modeSwitch" aria-label="游戏模式切换"></section>
 
-        <section class="quick-switch" id="quickSwitch" aria-label="题材和背景切换"></section>
+          <section class="quick-switch" id="quickSwitch" aria-label="题材和背景切换"></section>
+
+          <button class="secondary-action" type="button" id="resetButton">重新开始</button>
+        </section>
 
         <section class="top-actions">
           <button class="primary-action" type="button" id="startButton">开始对战</button>
-          <button class="secondary-action" type="button" id="resetButton">重新开始</button>
         </section>
+
+        <button class="mobile-settings-button hidden" type="button" id="mobileSettingsButton" aria-expanded="false">设置</button>
       </header>
 
       <section class="mobile-orientation-banner hidden" id="orientationBanner" aria-live="polite">
