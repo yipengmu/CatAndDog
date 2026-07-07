@@ -2,7 +2,12 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#fff7cf" />
+    <link rel="manifest" href="./manifest.json" />
     <title>猫狗大作战</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
@@ -35,6 +40,7 @@
           <section class="quick-switch" id="quickSwitch" aria-label="题材和背景切换"></section>
 
           <button class="secondary-action" type="button" id="resetButton">重新开始</button>
+          <button class="fullscreen-action" type="button" id="fullscreenButton" aria-label="全屏">全屏</button>
         </section>
 
         <section class="top-actions">

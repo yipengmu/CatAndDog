@@ -146,6 +146,7 @@ const dom = {
   startButton: document.querySelector("#startButton"),
   resetButton: document.querySelector("#resetButton"),
   mobileSettingsButton: document.querySelector("#mobileSettingsButton"),
+  fullscreenButton: document.querySelector("#fullscreenButton"),
   orientationBanner: document.querySelector("#orientationBanner"),
   orientationTitle: document.querySelector("#orientationTitle"),
   orientationText: document.querySelector("#orientationText"),
@@ -935,11 +936,19 @@ function invalidatePanels() {
 }
 
 function syncViewportState() {
-  state.isNarrowViewport = window.matchMedia("(max-width: 820px), (orientation: landscape) and (max-height: 520px)").matches;
-  state.orientation = window.innerHeight > window.innerWidth ? "portrait" : "landscape";
+  const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+  state.isNarrowViewport = viewportWidth <= 900 || viewportHeight <= 520;
+  state.orientation = viewportHeight > viewportWidth ? "portrait" : "landscape";
+
+  if (isFullscreen() && state.mode === "duo" && state.orientation === "portrait") {
+    state.orientationOverride = "landscape";
+  }
   if (!state.isNarrowViewport) {
-    state.orientationOverride = "";
     state.settingsOpen = false;
+  }
+  if (!state.isNarrowViewport && !isFullscreen()) {
+    state.orientationOverride = "";
   }
   invalidatePanels();
   updateHud();
@@ -976,6 +985,65 @@ function toggleOrientationOverride() {
 function toggleMobileSettings() {
   state.settingsOpen = !state.settingsOpen;
   updateHud();
+}
+
+function isFullscreen() {
+  return !!(document.fullscreenElement || document.webkitFullscreenElement);
+}
+
+function toggleFullscreen() {
+  if (isFullscreen()) {
+    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  } else {
+    const el = document.documentElement;
+    const requestFS = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (requestFS) {
+      requestFS.call(el).catch(() => {});
+    }
+  }
+}
+
+function syncFullscreenButton() {
+  const fsApi = document.fullscreenEnabled || document.webkitFullscreenEnabled;
+  if (!fsApi) {
+    dom.fullscreenButton.classList.add("hidden");
+    return;
+  }
+  const active = isFullscreen();
+  dom.fullscreenButton.textContent = active ? "✕ 退出全屏" : "⛶ 全屏";
+  dom.fullscreenButton.classList.toggle("is-fullscreen", active);
+  document.body.dataset.fullscreen = String(active);
+  syncViewportState();
+}
+
+function lockScreenOrientation() {
+  if (!screen.orientation || !screen.orientation.lock) return;
+  const preferred = isSoloMode() ? "portrait" : "landscape";
+  screen.orientation.lock(preferred).catch(() => {});
+}
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener("touchend", (e) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      e.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function preventPullToRefresh() {
+  let startY = 0;
+  document.addEventListener("touchstart", (e) => {
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener("touchmove", (e) => {
+    const y = e.touches[0].clientY;
+    if (y > startY && window.scrollY === 0) {
+      e.preventDefault();
+    }
+  }, { passive: false });
 }
 
 document.addEventListener("keydown", (event) => {
@@ -1015,12 +1083,34 @@ dom.rewardRestartButton.addEventListener("click", () => {
 });
 dom.orientationToggle.addEventListener("click", toggleOrientationOverride);
 dom.mobileSettingsButton.addEventListener("click", toggleMobileSettings);
+dom.fullscreenButton.addEventListener("click", () => {
+  if (isFullscreen()) {
+    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  } else {
+    const el = document.documentElement;
+    const requestFS = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (requestFS) {
+      requestFS.call(el).then(() => {
+        lockScreenOrientation();
+        syncViewportState();
+      }).catch(() => {});
+    }
+  }
+  unlockAudio();
+});
+
+document.addEventListener("fullscreenchange", syncFullscreenButton);
+document.addEventListener("webkitfullscreenchange", syncFullscreenButton);
 
 window.addEventListener("resize", syncViewportState);
 window.addEventListener("orientationchange", syncViewportState);
 
+preventDoubleTapZoom();
+preventPullToRefresh();
 setupLanes();
 renderModeSwitch();
 renderQuickSwitch();
 syncViewportState();
+syncFullscreenButton();
+document.body.dataset.fullscreen = "false";
 requestAnimationFrame(step);
