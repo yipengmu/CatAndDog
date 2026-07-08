@@ -2072,21 +2072,21 @@ h1 {
   }
 
   body[data-mobile="true"] .game-shell {
-    width: calc(100vw - 8px);
+    width: calc(100vw - 4px);
     min-height: 100dvh;
     height: 100dvh;
-    padding: 4px 0;
-    gap: 6px;
+    padding: 2px 0;
+    gap: 3px;
     overflow: hidden;
   }
 
   body[data-mobile="true"] .top-bar {
     position: relative;
     z-index: 12;
-    grid-template-columns: minmax(92px, auto) minmax(178px, 1fr) auto auto;
-    gap: 6px;
-    padding: 6px 8px;
-    border-radius: 16px;
+    grid-template-columns: minmax(88px, auto) minmax(150px, 1fr) auto auto;
+    gap: 4px;
+    padding: 4px 6px;
+    border-radius: 14px;
   }
 
   body[data-mobile="true"] .settings-panel {
@@ -2095,15 +2095,15 @@ h1 {
 
   body[data-mobile="true"][data-settings-open="true"] .settings-panel {
     position: fixed;
-    top: 56px;
-    right: 8px;
-    left: 8px;
+    top: 46px;
+    right: 6px;
+    left: 6px;
     z-index: 30;
     display: grid;
-    gap: 8px;
-    padding: 10px;
+    gap: 6px;
+    padding: 8px;
     border: 2px solid rgba(255, 255, 255, 0.92);
-    border-radius: 18px;
+    border-radius: 16px;
     background: rgba(255, 253, 246, 0.97);
     box-shadow: 0 18px 42px rgba(42, 55, 64, 0.22);
   }
@@ -2125,18 +2125,18 @@ h1 {
 
   body[data-mobile="true"] .brand {
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
 
   body[data-mobile="true"] .logo-badge {
-    width: 34px;
-    height: 34px;
-    border-radius: 12px;
-    font-size: 0.8rem;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    font-size: 0.72rem;
   }
 
   body[data-mobile="true"] h1 {
-    font-size: 1rem;
+    font-size: 0.94rem;
   }
 
   body[data-mobile="true"] .brand p {
@@ -2144,13 +2144,13 @@ h1 {
   }
 
   body[data-mobile="true"] .score-board {
-    grid-template-columns: minmax(54px, 1fr) 56px minmax(54px, 1fr);
-    gap: 5px;
+    grid-template-columns: minmax(48px, 1fr) 48px minmax(48px, 1fr);
+    gap: 4px;
   }
 
   body[data-mobile="true"] .score-card {
-    padding: 4px 6px;
-    border-radius: 12px;
+    padding: 2px 5px;
+    border-radius: 10px;
   }
 
   body[data-mobile="true"] .score-card span {
@@ -2158,13 +2158,13 @@ h1 {
   }
 
   body[data-mobile="true"] .score-card strong {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
   body[data-mobile="true"] .round-pill {
-    min-height: 32px;
-    border-radius: 12px;
-    font-size: 0.82rem;
+    min-height: 28px;
+    border-radius: 10px;
+    font-size: 0.76rem;
   }
 
   body[data-mobile="true"] .top-actions {
@@ -2174,10 +2174,10 @@ h1 {
   body[data-mobile="true"] .primary-action,
   body[data-mobile="true"] .mobile-settings-button {
     min-width: 0;
-    min-height: 36px;
-    padding: 0 10px;
-    border-radius: 12px;
-    font-size: 0.84rem;
+    min-height: 32px;
+    padding: 0 8px;
+    border-radius: 10px;
+    font-size: 0.78rem;
     white-space: nowrap;
   }
 
@@ -2199,74 +2199,84 @@ h1 {
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .game-shell {
-    grid-template-rows: auto minmax(0, 1fr) 150px;
+    grid-template-rows: auto minmax(0, 1fr) 142px;
+    width: calc(100vw - 4px);
+    padding: 2px 0;
+    gap: 3px;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .top-bar {
+    grid-template-columns: minmax(88px, auto) minmax(150px, 1fr) auto auto;
+    gap: 4px;
+    padding: 3px 6px;
+    border-radius: 12px;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .battle-stage {
     min-height: 0;
     height: 100%;
-    grid-template-columns: 52px 1fr 52px;
-    gap: 6px;
-    border-width: 3px;
-    border-radius: 16px;
+    grid-template-columns: 46px 1fr 46px;
+    gap: 4px;
+    border-width: 2px;
+    border-radius: 14px;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .base {
-    width: 46px;
-    min-height: 86px;
-    margin-bottom: 10px;
-    padding: 6px 4px;
-    border-radius: 18px 18px 12px 12px;
+    width: 40px;
+    min-height: 76px;
+    margin-bottom: 8px;
+    padding: 5px 3px;
+    border-radius: 15px 15px 10px 10px;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .base-face {
-    width: 34px;
-    height: 34px;
-    border-radius: 12px;
-    font-size: 1.15rem;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    font-size: 1rem;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .base span {
-    min-width: 34px;
-    padding: 2px 8px;
-    font-size: 0.9rem;
+    min-width: 30px;
+    padding: 1px 7px;
+    font-size: 0.82rem;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .lane-line {
-    height: 34px;
-    margin-top: -17px;
+    height: 30px;
+    margin-top: -15px;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .pet-unit {
-    width: 52px;
-    height: 52px;
-    margin-left: -26px;
-    margin-top: -26px;
+    width: 48px;
+    height: 48px;
+    margin-left: -24px;
+    margin-top: -24px;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .pet-unit .animal-icon {
-    width: 62px;
-    height: 50px;
-    transform: translateY(2px) scale(0.96);
+    width: 58px;
+    height: 47px;
+    transform: translateY(2px) scale(0.94);
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .duel-controls {
     min-height: 0;
     grid-template-columns: 1fr 1fr;
-    gap: 6px;
+    gap: 4px;
     overflow: hidden;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .player-panel {
     min-height: 0;
-    padding: 7px;
-    gap: 5px;
-    border-radius: 14px;
+    padding: 5px;
+    gap: 4px;
+    border-radius: 12px;
     overflow: hidden;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .player-head {
-    min-height: 26px;
+    min-height: 24px;
     align-items: center;
   }
 
@@ -2275,67 +2285,67 @@ h1 {
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .player-head strong {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .energy-chip {
-    min-width: 66px;
-    min-height: 26px;
-    padding: 0 8px;
-    border-radius: 12px;
-    font-size: 0.82rem;
+    min-width: 60px;
+    min-height: 24px;
+    padding: 0 7px;
+    border-radius: 10px;
+    font-size: 0.76rem;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .star-symbol {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .energy-track {
-    height: 8px;
+    height: 6px;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .lane-picker {
-    gap: 5px;
+    gap: 4px;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .lane-button {
-    min-height: 30px;
-    padding: 0 5px;
-    border-radius: 11px;
-    font-size: 0.78rem;
+    min-height: 28px;
+    padding: 0 4px;
+    border-radius: 10px;
+    font-size: 0.74rem;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .lane-button span {
-    min-width: 20px;
-    height: 20px;
-    margin-right: 4px;
-    border-radius: 7px;
-    font-size: 0.7rem;
+    min-width: 18px;
+    height: 18px;
+    margin-right: 3px;
+    border-radius: 6px;
+    font-size: 0.66rem;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .strategy-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 5px;
+    gap: 4px;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .strategy-card {
-    min-height: 50px;
-    grid-template-columns: 34px minmax(0, 1fr);
-    gap: 5px;
-    padding: 5px;
-    border-radius: 13px;
+    min-height: 46px;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 4px;
+    padding: 4px;
+    border-radius: 11px;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .pet-avatar {
-    width: 34px;
-    height: 34px;
-    border-radius: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .pet-avatar .animal-icon {
-    width: 42px;
-    height: 34px;
+    width: 39px;
+    height: 32px;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .key-badge {
@@ -2343,13 +2353,13 @@ h1 {
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .pet-name {
-    font-size: 0.76rem;
+    font-size: 0.72rem;
     line-height: 1.05;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .pet-meta {
     gap: 3px;
-    margin-top: 2px;
+    margin-top: 1px;
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .pet-meta span:not(.cost-badge) {
@@ -2357,8 +2367,8 @@ h1 {
   }
 
   body[data-mobile="true"][data-mode="duo"][data-orientation="landscape"] .pet-meta span {
-    padding: 1px 5px;
-    font-size: 0.66rem;
+    padding: 1px 4px;
+    font-size: 0.62rem;
   }
 }
 
