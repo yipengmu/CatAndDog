@@ -2709,6 +2709,7 @@ body[data-fullscreen="true"][data-orientation="landscape"] .pet-unit .animal-ico
 
 /* Mobile play is designed around a real landscape viewport, without requiring fullscreen. */
 @media (max-width: 900px), (max-height: 520px) {
+  .fullscreen-action,
   body[data-mobile="true"] .fullscreen-action {
     display: none !important;
   }

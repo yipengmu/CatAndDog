@@ -1015,8 +1015,14 @@ function syncFullscreenButton() {
     dom.fullscreenButton.classList.add("hidden");
     return;
   }
+  const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+  const isNarrowViewport = viewportWidth <= 900 || viewportHeight <= 520;
   const active = isFullscreen();
-  dom.fullscreenButton.textContent = active ? "✕ 退出全屏" : "⛶ 全屏";
+  const narrowLabel = active ? "✕ 退出横屏" : "⛶ 横屏";
+  const desktopLabel = active ? "✕ 退出全屏" : "⛶ 全屏";
+  dom.fullscreenButton.textContent = isNarrowViewport ? narrowLabel : desktopLabel;
+  dom.fullscreenButton.setAttribute("aria-label", isNarrowViewport ? "横屏" : "全屏");
   dom.fullscreenButton.classList.toggle("is-fullscreen", active);
   document.body.dataset.fullscreen = String(active);
   syncViewportState();
