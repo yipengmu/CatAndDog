@@ -1329,6 +1329,10 @@ h1 {
   gap: 12px;
 }
 
+.play-area {
+  display: contents;
+}
+
 .player-panel {
   padding: 14px;
   display: grid;
@@ -2701,4 +2705,217 @@ body[data-fullscreen="true"][data-orientation="landscape"] .pet-unit .animal-ico
   width: 64px;
   height: 52px;
   transform: translateY(2px) scale(0.92);
+}
+
+/* Mobile play is designed around a real landscape viewport, without requiring fullscreen. */
+@media (max-width: 900px), (max-height: 520px) {
+  body[data-mobile="true"] .fullscreen-action {
+    display: none !important;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="portrait"] .mobile-orientation-banner:not(.hidden) {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: max(28px, env(safe-area-inset-top)) max(28px, env(safe-area-inset-right)) max(28px, env(safe-area-inset-bottom)) max(28px, env(safe-area-inset-left));
+    border: 0;
+    border-radius: 0;
+    text-align: center;
+    background:
+      radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.96) 0 68px, transparent 69px),
+      linear-gradient(145deg, #fff4b8, #bfefff 52%, #ffd4df);
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="portrait"] .orientation-banner-copy {
+    max-width: 330px;
+    gap: 10px;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="portrait"] .mobile-orientation-banner strong {
+    font-size: 1.35rem;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="portrait"] .mobile-orientation-banner span {
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .game-shell {
+    width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right) - 4px);
+    height: 100dvh;
+    min-height: 100dvh;
+    grid-template-rows: auto minmax(0, 1fr);
+    padding: 2px 0;
+    gap: 4px;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .play-area {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: clamp(156px, 24vw, 224px) minmax(170px, 1fr) clamp(156px, 24vw, 224px);
+    grid-template-rows: minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .battle-stage {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    gap: 3px;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .duel-controls {
+    display: contents;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .player-panel {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    display: grid;
+    grid-template-columns: minmax(42px, 0.44fr) minmax(0, 1fr);
+    grid-template-rows: auto 6px minmax(0, 1fr);
+    grid-template-areas:
+      "head head"
+      "energy energy"
+      "lanes units";
+    gap: 5px;
+    padding: 6px;
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .left-player {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .right-player {
+    grid-column: 3;
+    grid-row: 1;
+    grid-template-columns: minmax(0, 1fr) minmax(42px, 0.44fr);
+    grid-template-areas:
+      "head head"
+      "energy energy"
+      "units lanes";
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .player-head {
+    grid-area: head;
+    min-width: 0;
+    min-height: 28px;
+    gap: 6px;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .player-head > div:first-child {
+    min-width: 0;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .player-head strong {
+    font-size: clamp(0.76rem, 2.1vw, 0.9rem);
+    white-space: nowrap;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .energy-chip {
+    min-width: 58px;
+    padding: 0 5px;
+    font-size: clamp(0.68rem, 1.8vw, 0.76rem);
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .energy-track {
+    grid-area: energy;
+    height: 6px;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .lane-picker {
+    grid-area: lanes;
+    min-width: 0;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .lane-button {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    height: 100%;
+    padding: 2px;
+    font-size: clamp(0.72rem, 1.8vw, 0.88rem);
+    white-space: nowrap;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .lane-button span {
+    display: none;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .strategy-grid {
+    grid-area: units;
+    min-width: 0;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .strategy-card {
+    width: 100%;
+    min-width: 0;
+    min-height: 54px;
+    height: 100%;
+    grid-template-columns: clamp(30px, 5.2vw, 42px) minmax(0, 1fr);
+    gap: 5px;
+    padding: 5px;
+    overflow: hidden;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .strategy-card > div:last-child {
+    min-width: 0;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .pet-avatar {
+    width: clamp(30px, 5.2vw, 42px);
+    height: clamp(30px, 5.2vw, 42px);
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .pet-avatar .animal-icon {
+    width: clamp(36px, 6vw, 48px);
+    height: clamp(30px, 5vw, 40px);
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .pet-name {
+    display: block;
+    font-size: clamp(0.68rem, 1.55vw, 0.84rem);
+    line-height: 1.25;
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: normal;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .pet-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin-top: 3px;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .pet-meta span {
+    display: inline-block;
+    font-size: clamp(0.58rem, 1.3vw, 0.68rem);
+    line-height: 1.25;
+  }
+
+  body[data-mobile="true"][data-mode="duo"][data-device-orientation="landscape"] .pet-meta span:not(.cost-badge) {
+    display: inline-block;
+  }
 }

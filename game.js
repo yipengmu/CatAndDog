@@ -200,7 +200,7 @@ function getModeSubtitle() {
 }
 
 function getLayoutOrientation() {
-  return state.orientationOverride || state.orientation;
+  return state.orientation;
 }
 
 function stopThemeMusic() {
@@ -536,6 +536,9 @@ function renderModeSwitch() {
 function renderLanePicker(side) {
   const picker = dom[`${side}LanePicker`];
   const isAiSide = isSoloMode() && side === "right";
+  const renderKey = `${state.mode}:${side}:${state.sides[side].lane}:${state.isNarrowViewport}`;
+  if (picker.dataset.renderKey === renderKey) return;
+  picker.dataset.renderKey = renderKey;
   picker.innerHTML = "";
   picker.classList.toggle("ai-lane-picker", isAiSide);
   laneNames.forEach((name, laneIndex) => {
@@ -543,6 +546,7 @@ function renderLanePicker(side) {
     button.className = `lane-button ${state.sides[side].lane === laneIndex ? "active" : ""}`;
     button.type = "button";
     button.disabled = isAiSide;
+    button.setAttribute("aria-label", `${side === "left" ? "左方" : "右方"}${name}`);
     const keyHint = state.isNarrowViewport ? ["1", "2", "3"][laneIndex] : controls[side].lanes[laneIndex];
     button.innerHTML = `<span>${keyHint}</span>${name}`;
     button.addEventListener("click", () => {
@@ -559,11 +563,15 @@ function renderStrategyCards(side) {
   const themeSide = getTheme()[side];
   const sideState = state.sides[side];
   const isAiSide = isSoloMode() && side === "right";
-  const cardKey = `${state.themeId}:${state.mode}:${side}:${state.running}:${Math.floor(sideState.energy)}:${sideState.lane}:${state.isNarrowViewport}`;
-  if (sideState.cardKey === cardKey) return;
-  sideState.cardKey = cardKey;
-
   const grid = dom[`${side}StrategyGrid`];
+  const cardKey = `${state.themeId}:${state.mode}:${side}:${state.isNarrowViewport}:${getLayoutOrientation()}`;
+  if (sideState.cardKey === cardKey) {
+    [...grid.children].forEach((card, index) => {
+      card.disabled = !state.running || sideState.energy < themeSide.units[index].cost;
+    });
+    return;
+  }
+  sideState.cardKey = cardKey;
   grid.innerHTML = "";
 
   if (isAiSide) return;
@@ -573,6 +581,7 @@ function renderStrategyCards(side) {
     card.className = `strategy-card ${side} ${themeSide.className} ${unit.species || ""}`;
     card.type = "button";
     card.disabled = !state.running || sideState.energy < unit.cost;
+    card.setAttribute("aria-label", `${side === "left" ? "左方" : "右方"}出兵：${unit.name}，消耗 ${unit.cost} 点能量`);
     const keyHint = state.isNarrowViewport ? (getLayoutOrientation() === "landscape" ? "出兵" : "点按出兵") : controls[side].units[index];
     card.innerHTML = `
       <div class="pet-avatar">${renderAnimalIcon(unit)}</div>
@@ -931,7 +940,11 @@ function closeMobileSettings() {
 
 function invalidatePanels() {
   sideOrder.forEach((side) => {
-    state.sides[side].cardKey = "";
+    const sideState = state.sides[side];
+    const units = getTheme()[side].units;
+    [...dom[`${side}StrategyGrid`].children].forEach((card, index) => {
+      card.disabled = !state.running || sideState.energy < units[index].cost;
+    });
   });
 }
 
@@ -941,9 +954,6 @@ function syncViewportState() {
   state.isNarrowViewport = viewportWidth <= 900 || viewportHeight <= 520;
   state.orientation = viewportHeight > viewportWidth ? "portrait" : "landscape";
 
-  if (isFullscreen() && state.mode === "duo" && state.orientation === "portrait") {
-    state.orientationOverride = "landscape";
-  }
   if (!state.isNarrowViewport) {
     state.settingsOpen = false;
   }
@@ -960,15 +970,11 @@ function syncOrientationBanner() {
   const expectedOrientation = needsPortrait ? "portrait" : "landscape";
   const showBanner = state.isNarrowViewport && (layoutOrientation !== expectedOrientation || state.orientationOverride === "landscape");
   dom.orientationBanner.classList.toggle("hidden", !showBanner);
-  dom.orientationTitle.textContent = needsPortrait ? "单人模式更适合竖屏" : "双人模式更适合横屏";
+  dom.orientationTitle.textContent = needsPortrait ? "单人模式更适合竖屏" : "请横屏开始双人对战";
   dom.orientationText.textContent = needsPortrait
     ? "把手机竖起来，自己的出兵卡会更大；也可以点按钮恢复竖屏布局。"
-    : state.orientationOverride === "landscape"
-      ? "现在已经是横屏布局了，不转手机也能双人对战。"
-      : "如果系统横屏没生效，可以直接点按钮切到横屏对战布局。";
-  const showToggle = state.isNarrowViewport && (!needsPortrait || state.orientationOverride === "landscape");
-  dom.orientationToggle.classList.toggle("hidden", !showToggle);
-  dom.orientationToggle.textContent = layoutOrientation === "landscape" ? "恢复自动方向" : "切换横屏布局";
+    : "请把手机横过来，左右两位玩家会各自获得一组靠近手边的操作区。";
+  dom.orientationToggle.classList.add("hidden");
 }
 
 function toggleOrientationOverride() {
@@ -1090,10 +1096,7 @@ dom.fullscreenButton.addEventListener("click", () => {
     const el = document.documentElement;
     const requestFS = el.requestFullscreen || el.webkitRequestFullscreen;
     if (requestFS) {
-      requestFS.call(el).then(() => {
-        lockScreenOrientation();
-        syncViewportState();
-      }).catch(() => {});
+      requestFS.call(el).then(syncViewportState).catch(() => {});
     }
   }
   unlockAudio();
